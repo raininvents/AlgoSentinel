@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Essential Open Graph Tags for WhatsApp -->
+    <meta property="og:title" content="Analytics Dashboard - Real-time Metrics">
+    <meta property="og:description" content="Interactive dashboard showing real-time analytics, KPIs, and data visualizations">
+    <meta property="og:url" content="https://yourdomain.com/dashboard">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Analytics Pro">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Analytics Dashboard - Real-time Metrics">
+    <meta name="twitter:description" content="Interactive dashboard showing real-time analytics, KPIs, and data visualizations">
+
+    <!-- Standard Meta Tags -->
+    <title>Analytics Dashboard - Real-time Metrics</title>
+    <meta name="description" content="Interactive dashboard showing real-time analytics, KPIs, and data visualizations">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .positive {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .negative {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .chart {
+            height: 200px;
+            background: linear-gradient(to top, #3498db, #2c3e50);
+            border-radius: 8px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.1) 50%, transparent 51%),
+                linear-gradient(transparent 49%, rgba(255,255,255,0.1) 50%, transparent 51%);
+            background-size: 20px 20px;
+        }
+
+        .bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100%;
+            padding: 0 10px;
+        }
+
+        .bar {
+            width: 30px;
+            background: linear-gradient(to top, #e74c3c, #fdbb2d);
+            border-radius: 4px 4px 0 0;
+            animation: grow 1.5s ease-out;
+        }
+
+        @keyframes grow {
+            from { height: 0; }
+        }
+
+        .bar:nth-child(2) {
+            background: linear-gradient(to top, #3498db, #2ecc71);
+            height: 70%;
+        }
+
+        .bar:nth-child(3) {
+            height: 90%;
+        }
+
+        .bar:nth-child(4) {
+            background: linear-gradient(to top, #9b59b6, #3498db);
+            height: 60%;
+        }
+
+        .bar:nth-child(5) {
+            height: 80%;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+
+        /* Preview Image Simulation (hidden from normal view) */
+        .preview-simulation {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .preview-image {
+            width: 600px;
+            height: 315px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .preview-image h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .preview-image p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .show-preview {
+            display: flex;
+        }
+
+        .preview-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .preview-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .preview-image {
+                width: 90%;
+                height: auto;
+                padding: 20px;
+            }
+
+            .preview-image h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Analytics Dashboard</h1>
+            <p class="subtitle">Real-time metrics and performance indicators</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2>Performance Metrics</h2>
+                <div class="metric">
+                    <span>Page Load Time</span>
+                    <span class="metric-value">1.2s</span>
+                </div>
+                <div class="metric">
+                    <span>Server Uptime</span>
+                    <span class="metric-value">99.8%</span>
+                </div>
+                <div class="metric">
+                    <span>Active Users</span>
+                    <span class="metric-value">2,847</span>
+                </div>
+                <div class="metric">
+                    <span>API Response Time</span>
+                    <span class="metric-value">340ms</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Revenue Analytics</h2>
+                <div class="metric">
+                    <span>Total Revenue</span>
+                    <span class="metric-value">$124,580</span>
+                </div>
+                <div class="metric">
+                    <span>Monthly Growth</span>
+                    <span class="metric-change positive">+12.5%</span>
+                </div>
+                <div class="metric">
+                    <span>Conversion Rate</span>
+                    <span class="metric-value">4.7%</span>
+                </div>
+                <div class="metric">
+                    <span>Avg. Order Value</span>
+                    <span class="metric-value">$86.40</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>User Engagement</h2>
+                <div class="metric">
+                    <span>Session Duration</span>
+                    <span class="metric-value">4m 22s</span>
+                </div>
+                <div class="metric">
+                    <span>Bounce Rate</span>
+                    <span class="metric-change negative">-3.2%</span>
+                </div>
+                <div class="metric">
+                    <span>Pages per Session</span>
+                    <span class="metric-value">5.4</span>
+                </div>
+                <div class="metric">
+                    <span>New Visitors</span>
+                    <span class="metric-value">64%</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Traffic Overview</h2>
+                <div class="chart">
+                    <div class="bars">
+                        <div class="bar" style="height: 50%;"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <div class="metric">
+                    <span>Direct</span>
+                    <span class="metric-value">32%</span>
+                </div>
+                <div class="metric">
+                    <span>Organic Search</span>
+                    <span class="metric-value">41%</span>
+                </div>
+                <div class="metric">
+                    <span>Social Media</span>
+                    <span class="metric-value">18%</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="preview-btn" onclick="togglePreview()">Show WhatsApp Preview Simulation</button>
+
+        <footer>
+            <p>Dashboard updated in real-time • Last refresh: <span id="current-time"></span></p>
+        </footer>
+    </div>
+
+    <!-- WhatsApp Preview Simulation -->
+    <div class="preview-simulation" id="previewSimulation">
+        <div class="preview-image">
+            <h2>Analytics Dashboard</h2>
+            <p>Real-time metrics and performance indicators</p>
+            <p style="margin-top: 20px; font-size: 1rem;">yourdomain.com/dashboard</p>
+        </div>
+        <button class="preview-btn" onclick="togglePreview()">Close Preview</button>
+    </div>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString();
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Toggle preview simulation
+        function togglePreview() {
+            const preview = document.getElementById('previewSimulation');
+            preview.classList.toggle('show-preview');
+        }
+
+        // Animate chart bars with random heights
+        document.querySelectorAll('.bar').forEach(bar => {
+            const randomHeight = Math.floor(Math.random() * 80) + 20;
+            bar.style.height = `${randomHeight}%`;
+        });
+    </script>
+</body>
+</html>
