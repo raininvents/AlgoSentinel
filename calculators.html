@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Financial Calculators | RAIN Ventures</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ---------- GLOBAL STYLES ---------- */
+:root {
+  --primary-blue: #011C68;
+  --secondary-blue: #1e40af;
+  --accent-gold: #FFD740;
+  --light-gold: #f5d67b;
+  --dark-bg: #0f172a;
+  --card-bg: #ffffff;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --gradient: linear-gradient(135deg, #011C68 0%, #1e40af 100%);
+  --gold-gradient: linear-gradient(135deg, #FFD740 0%, #f5d67b 100%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+  color: var(--light-gold);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ---------- HEADER ---------- */
+.header {
+  background: var(--primary-blue);
+  color: var(--light-gold);
+  padding: 20px 5%;
+  text-align: center;
+  box-shadow: 0 4px 25px rgba(1, 28, 104, 0.8);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.header img {
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 64, 0.6));
+}
+
+.header .RAIN {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--accent-gold);
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 10px rgba(255, 215, 64, 0.5);
+}
+
+.back-button {
+  position: absolute;
+  left: 5%;
+  background: transparent;
+  color: var(--light-gold);
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 2px solid var(--accent-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-button:hover {
+  background: var(--accent-gold);
+  color: var(--primary-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 64, 0.4);
+}
+
+/* ---------- CALCULATORS SECTION ---------- */
+.calculators-section {
+  padding: 40px 20px 80px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-title h1 {
+  font-size: 2.5rem;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.section-title p {
+  color: var(--light-gold);
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.calculator-container {
+  max-width: 800px;
+  margin: 0 auto 50px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(1, 28, 104, 0.1);
+}
+
+.calculator-title {
+  color: var(--text-dark);
+  margin-bottom: 25px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 2px solid var(--accent-gold);
+  padding-bottom: 10px;
+}
+
+.calculator-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(1, 28, 104, 0.2);
+}
+
+.calculate-btn {
+  grid-column: 1 / -1;
+  background: var(--accent-gold);
+  color: var(--primary-blue);
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.calculate-btn:hover {
+  background: var(--primary-blue);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(1, 28, 104, 0.3);
+}
+
+.results {
+  background: rgba(1, 28, 104, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 25px;
+}
+
+.results h3 {
+  color: var(--text-dark);
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(1, 28, 104, 0.1);
+}
+
+.result-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.result-label {
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.result-value {
+  color: var(--primary-blue);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.highlight {
+  background: var(--accent-gold);
+  color: var(--primary-blue);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: 700;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .calculator-form {
+    grid-template-columns: 1fr;
+  }
+
+  .calculator-container {
+    padding: 20px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .back-button {
+    position: relative;
+    left: 0;
+    margin-bottom: 10px;
+    justify-content: center;
+  }
+
+  .section-title h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-container {
+    padding: 15px;
+  }
+
+  .section-title h1 {
+    font-size: 1.8rem;
+  }
+}
+</style>
+</head>
+
+<body>
+<!-- HEADER -->
+<div class="header">
+  <a href="index.htm" class="back-button">
+    <i class="fas fa-arrow-left"></i> Back to Home
+  </a>
+  <div class="header-content">
+    <img src="RainVenturesLogo1.gif" alt="RAIN Ventures">
+    <span class="RAIN">Rise Above In Numbers</span>
+  </div>
+</div>
+
+<!-- CALCULATORS SECTION -->
+<section class="calculators-section">
+  <div class="section-title">
+    <h1>Financial Calculators</h1>
+    <p>Plan your financial future with our comprehensive suite of calculators</p>
+  </div>
+
+  <!-- SIP Calculator -->
+  <div class="calculator-container" id="sip">
+    <h2 class="calculator-title">SIP Calculator</h2>
+    <form class="calculator-form" id="sipForm">
+      <div class="form-group">
+        <label for="sipMonthlyInvestment">Monthly Investment (₹)</label>
+        <input type="number" id="sipMonthlyInvestment" placeholder="e.g., 5000" min="100" required>
+      </div>
+      <div class="form-group">
+        <label for="sipExpectedReturn">Expected Annual Return (%)</label>
+        <input type="number" id="sipExpectedReturn" placeholder="e.g., 12" min="1" max="30" step="0.1" required>
+      </div>
+      <div class="form-group">
+        <label for="sipTimePeriod">Time Period (Years)</label>
+        <input type="number" id="sipTimePeriod" placeholder="e.g., 10" min="1" max="50" required>
+      </div>
+      <div class="form-group">
+        <label for="sipInflation">Expected Inflation (%)</label>
+        <input type="number" id="sipInflation" placeholder="e.g., 6" min="0" max="15" step="0.1" value="6">
+      </div>
+      <button type="button" class="calculate-btn" onclick="calculateSIP()">Calculate</button>
+    </form>
+    <div class="results" id="sipResults" style="display: none;">
+      <h3>Your SIP Results</h3>
+      <div class="result-item">
+        <span class="result-label">Total Investment</span>
+        <span class="result-value" id="sipTotalInvestment">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Estimated Returns</span>
+        <span class="result-value" id="sipEstimatedReturns">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Total Value</span>
+        <span class="result-value highlight" id="sipTotalValue">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Future Value in Today's Money</span>
+        <span class="result-value" id="sipFutureValue">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Retirement Planner -->
+  <div class="calculator-container" id="retirement">
+    <h2 class="calculator-title">Retirement Planner</h2>
+    <form class="calculator-form" id="retirementForm">
+      <div class="form-group">
+        <label for="retirementCurrentAge">Current Age</label>
+        <input type="number" id="retirementCurrentAge" placeholder="e.g., 30" min="18" max="70" required>
+      </div>
+      <div class="form-group">
+        <label for="retirementRetirementAge">Retirement Age</label>
+        <input type="number" id="retirementRetirementAge" placeholder="e.g., 60" min="40" max="80" required>
+      </div>
+      <div class="form-group">
+        <label for="retirementLifeExpectancy">Life Expectancy</label>
+        <input type="number" id="retirementLifeExpectancy" placeholder="e.g., 85" min="60" max="120" required>
+      </div>
+      <div class="form-group">
+        <label for="retirementMonthlyExpenses">Current Monthly Expenses (₹)</label>
+        <input type="number" id="retirementMonthlyExpenses" placeholder="e.g., 40000" min="1000" required>
+      </div>
+      <div class="form-group">
+        <label for="retirementInflation">Expected Inflation (%)</label>
+        <input type="number" id="retirementInflation" placeholder="e.g., 6" min="0" max="15" step="0.1" value="6">
+      </div>
+      <div class="form-group">
+        <label for="retirementReturn">Expected Return (%)</label>
+        <input type="number" id="retirementReturn" placeholder="e.g., 10" min="1" max="30" step="0.1" required>
+      </div>
+      <button type="button" class="calculate-btn" onclick="calculateRetirement()">Calculate</button>
+    </form>
+    <div class="results" id="retirementResults" style="display: none;">
+      <h3>Your Retirement Plan</h3>
+      <div class="result-item">
+        <span class="result-label">Years to Retirement</span>
+        <span class="result-value" id="retirementYears">0 years</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Monthly Expenses at Retirement</span>
+        <span class="result-value" id="retirementFutureExpenses">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Retirement Corpus Required</span>
+        <span class="result-value highlight" id="retirementCorpus">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Monthly Investment Needed</span>
+        <span class="result-value" id="retirementMonthlyInvestment">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Car Goal Planner -->
+  <div class="calculator-container" id="car">
+    <h2 class="calculator-title">Car Goal Planner</h2>
+    <form class="calculator-form" id="carForm">
+      <div class="form-group">
+        <label for="carCurrentCost">Current Cost of Car (₹)</label>
+        <input type="number" id="carCurrentCost" placeholder="e.g., 800000" min="100000" required>
+      </div>
+      <div class="form-group">
+        <label for="carTimePeriod">Time to Buy (Years)</label>
+        <input type="number" id="carTimePeriod" placeholder="e.g., 5" min="1" max="20" required>
+      </div>
+      <div class="form-group">
+        <label for="carInflation">Expected Inflation (%)</label>
+        <input type="number" id="carInflation" placeholder="e.g., 5" min="0" max="15" step="0.1" value="5">
+      </div>
+      <div class="form-group">
+        <label for="carReturn">Expected Return (%)</label>
+        <input type="number" id="carReturn" placeholder="e.g., 12" min="1" max="30" step="0.1" required>
+      </div>
+      <button type="button" class="calculate-btn" onclick="calculateCar()">Calculate</button>
+    </form>
+    <div class="results" id="carResults" style="display: none;">
+      <h3>Your Car Goal Plan</h3>
+      <div class="result-item">
+        <span class="result-label">Future Cost of Car</span>
+        <span class="result-value" id="carFutureCost">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Monthly Investment Required</span>
+        <span class="result-value highlight" id="carMonthlyInvestment">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Total Investment</span>
+        <span class="result-value" id="carTotalInvestment">₹0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vacation Planner -->
+  <div class="calculator-container" id="vacation">
+    <h2 class="calculator-title">Vacation Planner</h2>
+    <form class="calculator-form" id="vacationForm">
+      <div class="form-group">
+        <label for="vacationCurrentCost">Current Cost of Vacation (₹)</label>
+        <input type="number" id="vacationCurrentCost" placeholder="e.g., 150000" min="10000" required>
+      </div>
+      <div class="form-group">
+        <label for="vacationTimePeriod">Time to Vacation (Years)</label>
+        <input type="number" id="vacationTimePeriod" placeholder="e.g., 3" min="1" max="20" required>
+      </div>
+      <div class="form-group">
+        <label for="vacationInflation">Expected Inflation (%)</label>
+        <input type="number" id="vacationInflation" placeholder="e.g., 7" min="0" max="15" step="0.1" value="7">
+      </div>
+      <div class="form-group">
+        <label for="vacationReturn">Expected Return (%)</label>
+        <input type="number" id="vacationReturn" placeholder="e.g., 10" min="1" max="30" step="0.1" required>
+      </div>
+      <button type="button" class="calculate-btn" onclick="calculateVacation()">Calculate</button>
+    </form>
+    <div class="results" id="vacationResults" style="display: none;">
+      <h3>Your Vacation Plan</h3>
+      <div class="result-item">
+        <span class="result-label">Future Cost of Vacation</span>
+        <span class="result-value" id="vacationFutureCost">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Monthly Investment Required</span>
+        <span class="result-value highlight" id="vacationMonthlyInvestment">₹0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Total Investment</span>
+        <span class="result-value" id="vacationTotalInvestment">₹0</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Format currency
+function formatCurrency(amount) {
+  return '₹' + amount.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+}
+
+// SIP Calculator
+function calculateSIP() {
+  const monthlyInvestment = parseFloat(document.getElementById('sipMonthlyInvestment').value);
+  const expectedReturn = parseFloat(document.getElementById('sipExpectedReturn').value) / 100;
+  const timePeriod = parseInt(document.getElementById('sipTimePeriod').value);
+  const inflation = parseFloat(document.getElementById('sipInflation').value) / 100;
+
+  const monthlyRate = expectedReturn / 12;
+  const months = timePeriod * 12;
+
+  // Future value of SIP
+  const futureValue = monthlyInvestment * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
+
+  const totalInvestment = monthlyInvestment * months;
+  const estimatedReturns = futureValue - totalInvestment;
+
+  // Future value in today's money (adjusted for inflation)
+  const futureValueToday = futureValue / Math.pow(1 + inflation, timePeriod);
+
+  document.getElementById('sipTotalInvestment').textContent = formatCurrency(totalInvestment);
+  document.getElementById('sipEstimatedReturns').textContent = formatCurrency(estimatedReturns);
+  document.getElementById('sipTotalValue').textContent = formatCurrency(futureValue);
+  document.getElementById('sipFutureValue').textContent = formatCurrency(futureValueToday);
+  document.getElementById('sipResults').style.display = 'block';
+}
+
+// Retirement Planner
+function calculateRetirement() {
+  const currentAge = parseInt(document.getElementById('retirementCurrentAge').value);
+  const retirementAge = parseInt(document.getElementById('retirementRetirementAge').value);
+  const lifeExpectancy = parseInt(document.getElementById('retirementLifeExpectancy').value);
+  const monthlyExpenses = parseFloat(document.getElementById('retirementMonthlyExpenses').value);
+  const inflation = parseFloat(document.getElementById('retirementInflation').value) / 100;
+  const expectedReturn = parseFloat(document.getElementById('retirementReturn').value) / 100;
+
+  const yearsToRetirement = retirementAge - currentAge;
+  const retirementYears = lifeExpectancy - retirementAge;
+
+  // Future monthly expenses at retirement (adjusted for inflation)
+  const futureMonthlyExpenses = monthlyExpenses * Math.pow(1 + inflation, yearsToRetirement);
+
+  // Retirement corpus required (present value of annuity due for retirement years)
+  const monthlyReturn = expectedReturn / 12;
+  const retirementMonths = retirementYears * 12;
+
+  let corpus = 0;
+  if (monthlyReturn > 0) {
+    corpus = futureMonthlyExpenses * (1 - Math.pow(1 + monthlyReturn, -retirementMonths)) / monthlyReturn;
+  } else {
+    corpus = futureMonthlyExpenses * retirementMonths;
+  }
+
+  // Monthly investment needed to achieve corpus
+  const monthlyInvestmentRate = expectedReturn / 12;
+  const investmentMonths = yearsToRetirement * 12;
+
+  let monthlyInvestment = 0;
+  if (monthlyInvestmentRate > 0) {
+    monthlyInvestment = corpus / (((Math.pow(1 + monthlyInvestmentRate, investmentMonths) - 1) / monthlyInvestmentRate) * (1 + monthlyInvestmentRate));
+  } else {
+    monthlyInvestment = corpus / investmentMonths;
+  }
+
+  document.getElementById('retirementYears').textContent = yearsToRetirement + ' years';
+  document.getElementById('retirementFutureExpenses').textContent = formatCurrency(futureMonthlyExpenses);
+  document.getElementById('retirementCorpus').textContent = formatCurrency(corpus);
+  document.getElementById('retirementMonthlyInvestment').textContent = formatCurrency(monthlyInvestment);
+  document.getElementById('retirementResults').style.display = 'block';
+}
+
+// Car Goal Planner
+function calculateCar() {
+  const currentCost = parseFloat(document.getElementById('carCurrentCost').value);
+  const timePeriod = parseInt(document.getElementById('carTimePeriod').value);
+  const inflation = parseFloat(document.getElementById('carInflation').value) / 100;
+  const expectedReturn = parseFloat(document.getElementById('carReturn').value) / 100;
+
+  // Future cost of car (adjusted for inflation)
+  const futureCost = currentCost * Math.pow(1 + inflation, timePeriod);
+
+  // Monthly investment needed
+  const monthlyRate = expectedReturn / 12;
+  const months = timePeriod * 12;
+
+  let monthlyInvestment = 0;
+  if (monthlyRate > 0) {
+    monthlyInvestment = futureCost / (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
+  } else {
+    monthlyInvestment = futureCost / months;
+  }
+
+  const totalInvestment = monthlyInvestment * months;
+
+  document.getElementById('carFutureCost').textContent = formatCurrency(futureCost);
+  document.getElementById('carMonthlyInvestment').textContent = formatCurrency(monthlyInvestment);
+  document.getElementById('carTotalInvestment').textContent = formatCurrency(totalInvestment);
+  document.getElementById('carResults').style.display = 'block';
+}
+
+// Vacation Planner
+function calculateVacation() {
+  const currentCost = parseFloat(document.getElementById('vacationCurrentCost').value);
+  const timePeriod = parseInt(document.getElementById('vacationTimePeriod').value);
+  const inflation = parseFloat(document.getElementById('vacationInflation').value) / 100;
+  const expectedReturn = parseFloat(document.getElementById('vacationReturn').value) / 100;
+
+  // Future cost of vacation (adjusted for inflation)
+  const futureCost = currentCost * Math.pow(1 + inflation, timePeriod);
+
+  // Monthly investment needed
+  const monthlyRate = expectedReturn / 12;
+  const months = timePeriod * 12;
+
+  let monthlyInvestment = 0;
+  if (monthlyRate > 0) {
+    monthlyInvestment = futureCost / (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
+  } else {
+    monthlyInvestment = futureCost / months;
+  }
+
+  const totalInvestment = monthlyInvestment * months;
+
+  document.getElementById('vacationFutureCost').textContent = formatCurrency(futureCost);
+  document.getElementById('vacationMonthlyInvestment').textContent = formatCurrency(monthlyInvestment);
+  document.getElementById('vacationTotalInvestment').textContent = formatCurrency(totalInvestment);
+  document.getElementById('vacationResults').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
