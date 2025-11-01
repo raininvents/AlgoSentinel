@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAIN Ventures - Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #menu-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .menu-item {
+            margin-bottom: 15px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 14px;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Simple modal styling */
+        #ingredient-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center;
+        }
+
+        #ingredient-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu-container">
+        <h2>RAIN Ventures - Menu</h2>
+        <div id="today-menu">
+            <h3>Today's Menu</h3>
+            <div class="menu-item">
+                <span>Breakfast:</span>
+                <select id="today-breakfast" disabled></select>
+            </div>
+            <div class="menu-item">
+                <span>Lunch:</span>
+                <select id="today-lunch" disabled></select>
+            </div>
+            <div class="menu-item">
+                <span>Dinner:</span>
+                <select id="today-dinner" disabled></select>
+            </div>
+        </div>
+        <div id="tomorrow-menu">
+            <h3>Tomorrow's Menu</h3>
+            <div class="menu-item">
+                <span>Breakfast:</span>
+                <select id="tomorrow-breakfast" onchange="handleMenuChange('tomorrow-breakfast')"></select>
+            </div>
+            <div class="menu-item">
+                <span>Lunch:</span>
+                <select id="tomorrow-lunch" onchange="handleMenuChange('tomorrow-lunch')"></select>
+            </div>
+            <div class="menu-item">
+                <span>Dinner:</span>
+                <select id="tomorrow-dinner" onchange="handleMenuChange('tomorrow-dinner')"></select>
+            </div>
+        </div>
+
+        <!-- ✅ New Button -->
+        <button onclick="showWeeklyIngredients()">View Weekly Ingredients</button>
+
+        <button onclick="window.close()">Close</button>
+    </div>
+
+    <!-- ✅ Modal for ingredient display -->
+    <div id="ingredient-modal">
+        <div id="ingredient-content">
+            <h3>Ingredients Needed for Next 7 Days</h3>
+            <div id="ingredient-list"></div>
+            <button onclick="closeIngredientModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚙️ Simplified ingredient mapping (add more gradually)
+        const ingredientsList = {
+            "Puliyogre": ["Tamarind paste", "Rice", "Groundnuts", "Curry leaves", "Puliyogre mix"],
+            "Chapati and Tomato Gojju": ["Chapati", "Tomatoes", "Green chilies", "Onion", "Mustard seeds", "Tamarind", "Curry leaves"],
+            "Pudhina Rice": ["Pudhina leaves", "Rice", "Green chilies", "Coconut", "Lemon juice"],
+            "Irulli Roti and Pickle": ["Rice Flour","Green chilies","Carrot","Onion"],
+            "BisiBele Bath": ["Potato","Carrot","Onion","Green Peas","Beans","Choyote","Ghee","Cashew","Tur Dal"],
+            "Masala Idli and Alu Sagu" : ["Potato","Curd","Masala Idli Mix","Green Peas","Green Chillies"],
+            "Pongal and Tamarind Chutney": ["Rice","Moong Dal","Pepper","Ghee","Tamarind Chutney"],
+            "Chapati and  Veg Sagu": ["Chapati","Potato","Carrot","Onion","Green Peas","Beans","Choyote","Ghee"],
+            "Chitranna" : ["Groundnut","Rice", "Green chilies", "Coconut", "Lemon juice"],
+            "Ragi Roti and  Pickle":["Ragi Flour","Green chilies","Carrot","Onion"],
+            "Peas Pulao":["Pudhina leaves","Green Peas", "Rice", "Green chilies", "Coconut", "Lemon juice"],
+            "Paratha and Pickle":["Paratha"],
+            "Avalakki":["Avalakki","Onion","Green Chillies"],
+            "Rava Idli and Alu Sagu":["Potato","Curd","Rava Idli Mix","Green Peas","Green Chillies"],
+            "Tomato Bath": ["Rice","Tomato","Onion","Green Chillies"],
+            "Dosa and Chutney": ["Dosa Batter","Coconut","Fried Gram","Green Chillies"],
+            "Kichadi and Tamarind Chutney":["Rice","Moong Dal","Pepper","Onion","Carrot","Beans","Green Peas","Ghee","Tamarind Chutney"],
+            "Idli and Chutney":["Dosa Batter","Coconut","Fried Gram","Green Chillies"],
+            "Vangibath":["Vangibath Mix","Cashew"],
+            "Dosa and Alu Palya":["Dosa Batter","Potato","Onion","Green Peas","Green Chillies"],
+            "Mushroom Biryani":["Rice","Mushroom","Tomato","Onion","Green Chillies"],
+            "Khara Bath":["Rava","Carrot","Green Peas","Onion","Ghee","Cashew"],
+            "Bread Uppithu":["Bread","Green Chillies","Onion"],
+            "Pulao":["Pudhina leaves","Green Peas", "Rice", "Green chilies", "Coconut", "Lemon juice","Carrot","Onion","Beans"],
+            "Chapati and Tofu Scramble ": ["Chapati","Tofu","Tomatoes", "Green chilies", "Onion", "Mustard seeds", "Tamarind", "Curry leaves"],
+            "Paddu and Pickle": ["Dosa Batter","Green Chillies","Onion","Carrot"],
+            "Chapati and Onion Scramble":["Chapati","Tomatoes", "Green chilies", "Onion", "Mustard seeds", "Tamarind", "Curry leaves"],
+            "Majjige Huli": ["Curd", "Coconut", "Green chili", "Cumin seeds", "Turmeric", "Vegetables (Ash gourd / Bottle gourd)", "Mustard seeds", "Curry leaves"],
+            "Tomato Rasam": ["Tomato", "Tamarind", "Toor dal", "Rasam powder", "Mustard seeds", "Curry leaves", "Garlic", "Coriander leaves"],
+            "Veg Sambar": ["Toor dal", "Tamarind", "Mixed vegetables", "Sambar powder", "Mustard seeds", "Curry leaves", "Jaggery (optional)"],
+            "Andhra Poppu": ["Toor dal", "Tamarind", "Tomato", "Garlic", "Red chili powder", "Mustard seeds", "Curry leaves"],
+            "Ladies Finger Sambar": ["Toor dal", "Ladies finger (Bhindi)", "Tamarind", "Sambar powder", "Mustard seeds", "Curry leaves"],
+            "Tomato Poppu": ["Tomato", "Tamarind", "Toor dal", "Mustard seeds", "Curry leaves", "Garlic", "Red chili powder"],
+            "Radish Sambar": ["Toor dal", "Radish", "Tamarind", "Sambar powder", "Mustard seeds", "Curry leaves"],
+            "Madras Rasam": ["Tamarind", "Tomato", "Rasam powder", "Toor dal", "Mustard seeds", "Curry leaves", "Coriander leaves"],
+            "Carrot Sambar": ["Toor dal", "Carrot", "Tamarind", "Sambar powder", "Mustard seeds", "Curry leaves"],
+            "Hirekai Thove": ["Toor dal", "Ridge gourd (Hirekai)", "Coconut", "Green chili", "Cumin seeds", "Mustard seeds", "Curry leaves"],
+            "Bele Rasam": ["Toor dal", "Tamarind", "Rasam powder", "Tomato", "Mustard seeds", "Curry leaves", "Coriander leaves"],
+            "Brinjal Tomato Sambar": ["Toor dal", "Brinjal", "Tomato", "Tamarind", "Sambar powder", "Mustard seeds", "Curry leaves"],
+            "Aloo Rasam": ["Potato", "Tamarind", "Toor dal", "Rasam powder", "Mustard seeds", "Curry leaves"],
+            "Halsandi Kalu Sambar": ["Green gram (Hesaru kalu)", "Tamarind", "Sambar powder", "Coconut", "Mustard seeds", "Curry leaves"],
+            "Soppina Saaru": ["Spinach (Palak / Soppu)", "Toor dal", "Tamarind", "Garlic", "Cumin seeds", "Mustard seeds", "Curry leaves"],
+            "Hesarukalu Sambar": ["Green gram (Hesaru kalu)", "Tamarind", "Sambar powder", "Mustard seeds", "Curry leaves"],
+            "Menasina Saaru": ["Black pepper", "Cumin seeds", "Tamarind", "Coconut", "Garlic", "Mustard seeds", "Curry leaves"]
+            };
+
+        // ✅ Weekly ingredient list generator
+        function showWeeklyIngredients() {
+            const today = new Date();
+            const todayDay = today.getDate();
+            const ingredientsNeeded = new Set();
+
+            for (let i = 0; i < 7; i++) {
+                const day = todayDay + i;
+                const menu = menuByDay[day];
+                if (menu) {
+                    const meals = [menu.breakfast.selected, menu.lunch.selected, menu.dinner.selected];
+                    meals.forEach(meal => {
+                        if (ingredientsList[meal]) {
+                            ingredientsList[meal].forEach(ing => ingredientsNeeded.add(ing));
+                        }
+                    });
+                }
+            }
+
+            const ingredientDiv = document.getElementById("ingredient-list");
+            ingredientDiv.innerHTML = "";
+            if (ingredientsNeeded.size > 0) {
+                ingredientDiv.innerHTML = `<ul>${Array.from(ingredientsNeeded)
+                    .map(i => `<li>${i}</li>`)
+                    .join("")}</ul>`;
+            } else {
+                ingredientDiv.innerHTML = "<p>No ingredients found for this week's menu.</p>";
+            }
+
+            document.getElementById("ingredient-modal").style.display = "flex";
+        }
+
+        function closeIngredientModal() {
+            document.getElementById("ingredient-modal").style.display = "none";
+        }
+
+       // Modified menuByDay to include possible options for breakfast, lunch, and dinner
+        breakfast_items =   ["Puliyogre",
+                            "Chapati and Tomato Gojju",
+                            "Pudhina Rice",
+                            "Irulli Roti and Pickle",
+                            "BisiBele Bath",
+                            "Masala Idli and Alu Sagu",
+                            "Pongal and Tamarind Chutney",
+                            "Chapati and  Veg Sagu",
+                            "Chitranna",
+                            "Ragi Roti and  Pickle",
+                            "Peas Pulao",
+                            "Paratha and Pickle",
+                            "Avalakki",
+                            "Rava Idli and Alu Sagu",
+                            "Tomato Bath",
+                            "Dosa and Chutney",
+                            "Kichadi and Tamarind Chutney",
+                            "Idli and Chutney",
+                            "Vangibath",
+                            "Dosa and Alu Palya",
+                            "Mushroom Biryani",
+                            "Khara Bath",
+                            "Bread Uppithu",
+                            "Pulao",
+                            "Chapati and Tofu Scramble ",
+                            "Paddu and Pickle",
+                            "Chitranna",
+                            "Irulli Dosa and Pickle",
+                            "Peas Pulao",
+                            "Chapati and  Veg Sagu",
+                            "Avalakki",
+                            "Chapati and Onion Scramble " ]
+        lunch_items =       ["Majjige Huli",
+                            "Tomato Rasam",
+                            "Veg Sambar",
+                            "Andhra Poppu",
+                            "Ladies Finger Sambar",
+                            "Tomato Poppu",
+                            "Radish Sambar",
+                            "Madras Rasam",
+                            "Carrot Sambar",
+                            "Hirekai Thove",
+                            "Bele Rasam",
+                            "Brinjal Tomato Sambar",
+                            "Aloo Rasam",
+                            "Halsandi Kalu Sambar",
+                            "Soppina Saaru",
+                            "Hesarukalu Sambar",
+                            "Menasina Saaru",
+                            "Majjige Huli",
+                            "Tomato Rasam",
+                            "Veg Sambar",
+                            "Andhra Poppu",
+                            "Ladies Finger Sambar",
+                            "Tomato Poppu",
+                            "Soppina Saaru",
+                            "Carrot Sambar",
+                            "Madras Rasam",
+                            "Hirekai Thove",
+                            "Bele Rasam",
+                            "Brinjal Tomato Sambar",
+                            "Aloo Rasam",
+                            "Halsandi Kalu Sambar",
+                            "Bele Rasam"]
+        dinner_items =      ["Peanut Chutney Pudi,Salad and Millet Porridge",
+                            "Dry Coconut Chutney Pudi,Salad and Millet Porridge",
+                            "Channa Dal Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge",
+                            "Hurigadale Chutney Pudi,Salad and Millet Porridge",
+                            "Peanut Chutney Pudi,Salad and Millet Porridge",
+                            "Dry Coconut Chutney Pudi,Salad and Millet Porridge",
+                            "Channa Dal Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge",
+                            "Hurigadale Chutney Pudi,Salad and Millet Porridge",
+                            "Peanut Chutney Pudi,Salad and Millet Porridge",
+                            "Dry Coconut Chutney Pudi,Salad and Millet Porridge",
+                            "Channa Dal Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge",
+                            "Hurigadale Chutney Pudi,Salad and Millet Porridge",
+                            "Peanut Chutney Pudi,Salad and Millet Porridge",
+                            "Dry Coconut Chutney Pudi,Salad and Millet Porridge",
+                            "Channa Dal Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge",
+                            "Hurigadale Chutney Pudi,Salad and Millet Porridge",
+                            "Peanut Chutney Pudi,Salad and Millet Porridge",
+                            "Dry Coconut Chutney Pudi,Salad and Millet Porridge",
+                            "Channa Dal Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge",
+                            "Hurigadale Chutney Pudi,Salad and Millet Porridge",
+                            "Peanut Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge",
+                            "Dry Coconut Chutney Pudi,Salad and Millet Porridge",
+                            "Channa Dal Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge",
+                            "Hurigadale Chutney Pudi,Salad and Millet Porridge",
+                            "Curry Leaves Chutney Pudi,Salad and Millet Porridge"]
+
+        const menuByDay = {
+        1: {
+                breakfast: { selected: 'Puliyogre', options: breakfast_items },
+                lunch: { selected: 'Majjige Huli', options:lunch_items },
+                dinner: { selected: 'Peanut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        2: {
+                breakfast: { selected: 'Chapati and Tomato Gojju', options: breakfast_items },
+                lunch: { selected: 'Tomato Rasam', options:lunch_items },
+                dinner: { selected: 'Dry Coconut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        3: {
+                breakfast: { selected: 'Pudhina Rice', options: breakfast_items },
+                lunch: { selected: 'Veg Sambar', options:lunch_items },
+                dinner: { selected: 'Channa Dal Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        4: {
+                breakfast: { selected: 'Irulli Roti and Pickle', options: breakfast_items },
+                lunch: { selected: 'Andhra Poppu', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        5: {
+                breakfast: { selected: 'BisiBele Bath', options: breakfast_items },
+                lunch: { selected: 'Ladies Finger Sambar', options:lunch_items },
+                dinner: { selected: 'Hurigadale Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        6: {
+                breakfast: { selected: 'Masala Idli and Alu Sagu', options: breakfast_items },
+                lunch: { selected: 'Tomato Poppu', options:lunch_items },
+                dinner: { selected: 'Peanut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        7: {
+                breakfast: { selected: 'Pongal and Tamarind Chutney', options: breakfast_items },
+                lunch: { selected: 'Radish Sambar', options:lunch_items },
+                dinner: { selected: 'Dry Coconut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        8: {
+                breakfast: { selected: 'Chapati and  Veg Sagu', options: breakfast_items },
+                lunch: { selected: 'Madras Rasam', options:lunch_items },
+                dinner: { selected: 'Channa Dal Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        9: {
+                breakfast: { selected: 'Chitranna', options: breakfast_items },
+                lunch: { selected: 'Carrot Sambar', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        10: {
+                breakfast: { selected: 'Ragi Roti and  Pickle', options: breakfast_items },
+                lunch: { selected: 'Hirekai Thove', options:lunch_items },
+                dinner: { selected: 'Hurigadale Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        11: {
+                breakfast: { selected: 'Peas Pulao', options: breakfast_items },
+                lunch: { selected: 'Bele Rasam', options:lunch_items },
+                dinner: { selected: 'Peanut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        12: {
+                breakfast: { selected: 'Paratha and Pickle', options: breakfast_items },
+                lunch: { selected: 'Brinjal Tomato Sambar', options:lunch_items },
+                dinner: { selected: 'Dry Coconut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        13: {
+                breakfast: { selected: 'Avalakki', options: breakfast_items },
+                lunch: { selected: 'Aloo Rasam', options:lunch_items },
+                dinner: { selected: 'Channa Dal Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        14: {
+                breakfast: { selected: 'Rava Idli and Alu Sagu', options: breakfast_items },
+                lunch: { selected: 'Halsandi Kalu Sambar', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        15: {
+                breakfast: { selected: 'Tomato Bath', options: breakfast_items },
+                lunch: { selected: 'Soppina Saaru', options:lunch_items },
+                dinner: { selected: 'Hurigadale Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        16: {
+                breakfast: { selected: 'Dosa and Chutney', options: breakfast_items },
+                lunch: { selected: 'Hesarukalu Sambar', options:lunch_items },
+                dinner: { selected: 'Peanut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        17: {
+                breakfast: { selected: 'Kichadi and Tamarind Chutney', options: breakfast_items },
+                lunch: { selected: 'Menasina Saaru', options:lunch_items },
+                dinner: { selected: 'Dry Coconut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        18: {
+                breakfast: { selected: 'Idli and Chutney', options: breakfast_items },
+                lunch: { selected: 'Majjige Huli', options:lunch_items },
+                dinner: { selected: 'Channa Dal Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        19: {
+                breakfast: { selected: 'Vangibath', options: breakfast_items },
+                lunch: { selected: 'Tomato Rasam', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        20: {
+                breakfast: { selected: 'Dosa and Alu Palya', options: breakfast_items },
+                lunch: { selected: 'Veg Sambar', options:lunch_items },
+                dinner: { selected: 'Hurigadale Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        21: {
+                breakfast: { selected: 'Mushroom Biryani', options: breakfast_items },
+                lunch: { selected: 'Andhra Poppu', options:lunch_items },
+                dinner: { selected: 'Peanut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        22: {
+                breakfast: { selected: 'Khara Bath', options: breakfast_items },
+                lunch: { selected: 'Ladies Finger Sambar', options:lunch_items },
+                dinner: { selected: 'Dry Coconut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        23: {
+                breakfast: { selected: 'Bread Uppithu', options: breakfast_items },
+                lunch: { selected: 'Tomato Poppu', options:lunch_items },
+                dinner: { selected: 'Channa Dal Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        24: {
+                breakfast: { selected: 'Pulao', options: breakfast_items },
+                lunch: { selected: 'Soppina Saaru', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        25: {
+                breakfast: { selected: 'Chapati and Tofu Scramble ', options: breakfast_items },
+                lunch: { selected: 'Carrot Sambar', options:lunch_items },
+                dinner: { selected: 'Hurigadale Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        26: {
+                breakfast: { selected: 'Paddu and Pickle', options: breakfast_items },
+                lunch: { selected: 'Madras Rasam', options:lunch_items },
+                dinner: { selected: 'Peanut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        27: {
+                breakfast: { selected: 'Chitranna', options: breakfast_items },
+                lunch: { selected: 'Hirekai Thove', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        28: {
+                breakfast: { selected: 'Irulli Dosa and Pickle', options: breakfast_items },
+                lunch: { selected: 'Bele Rasam', options:lunch_items },
+                dinner: { selected: 'Dry Coconut Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        29: {
+                breakfast: { selected: 'Peas Pulao', options: breakfast_items },
+                lunch: { selected: 'Brinjal Tomato Sambar', options:lunch_items },
+                dinner: { selected: 'Channa Dal Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        30: {
+                breakfast: { selected: 'Chapati and  Veg Sagu', options: breakfast_items },
+                lunch: { selected: 'Aloo Rasam', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        31: {
+                breakfast: { selected: 'Avalakki', options: breakfast_items },
+                lunch: { selected: 'Halsandi Kalu Sambar', options:lunch_items },
+                dinner: { selected: 'Hurigadale Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        32: {
+                breakfast: { selected: 'Chapati and Onion Scramble ', options: breakfast_items },
+                lunch: { selected: 'Bele Rasam', options:lunch_items },
+                dinner: { selected: 'Curry Leaves Chutney Pudi,Salad and Millet Porridge', options:dinner_items }
+            },
+        };
+
+        // Get the current date and day
+        const today = new Date();
+        const todayDay = today.getDate(); // Get day of the month (e.g., 26 for 26th September)
+        const tomorrowDay = todayDay + 1; // Get day for tomorrow
+
+        // Function to populate dropdowns based on the menuByDay and restrict today’s changes
+        function populateDropdowns() {
+            populateMenuForDay("today", todayDay, true);
+            populateMenuForDay("tomorrow", tomorrowDay, false);
+        }
+
+        // Populate dropdowns for a specific day (either 'today' or 'tomorrow')
+        function populateMenuForDay(dayType, day, isDisabled) {
+            const meals = ["breakfast", "lunch", "dinner"];
+
+            meals.forEach(meal => {
+                if (menuByDay[day]) {
+                    const mealData = menuByDay[day][meal];
+                    populateDropdown(
+                        `${dayType}-${meal}`,
+                        mealData.options, // Populate options from menuByDay
+                        mealData.selected, // Preselect the current selected item for that meal
+                        isDisabled
+                    );
+                } else {
+                    console.warn(`Menu for day ${day} is not defined.`);
+                }
+            });
+        }
+
+        // Function to populate the dropdown with menu items
+        function populateDropdown(elementId, items, selectedItem, isDisabled) {
+            const dropdown = document.getElementById(elementId);
+            dropdown.innerHTML = ""; // Clear any existing options
+
+            items.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item;
+                option.text = item;
+                if (item === selectedItem) {
+                    option.selected = true;
+                }
+                dropdown.appendChild(option);
+            });
+
+            dropdown.disabled = isDisabled; // Disable dropdown if it's for today's menu
+        }
+
+        // Function to handle color change when the dropdown selection is changed
+        function handleMenuChange(elementId) {
+            const dropdown = document.getElementById(elementId);
+            dropdown.style.backgroundColor = "#d3ffd3"; // Change background color to light green on change
+        }
+
+        // Function to handle the submit and update the menuByDay for tomorrow
+        function submitMenu() {
+            const selectedTomorrowBreakfast = document.getElementById("tomorrow-breakfast").value;
+            const selectedTomorrowLunch = document.getElementById("tomorrow-lunch").value;
+            const selectedTomorrowDinner = document.getElementById("tomorrow-dinner").value;
+
+            // Update the dictionary for tomorrow
+            menuByDay[tomorrowDay] = {
+                breakfast: {
+                    selected: selectedTomorrowBreakfast,
+                    options: menuByDay[tomorrowDay].breakfast.options
+                },
+                lunch: {
+                    selected: selectedTomorrowLunch,
+                    options: menuByDay[tomorrowDay].lunch.options
+                },
+                dinner: {
+                    selected: selectedTomorrowDinner,
+                    options: menuByDay[tomorrowDay].dinner.options
+                }
+            };
+
+            alert(`Tomorrow's menu has been updated to:\nBreakfast: ${selectedTomorrowBreakfast}\nLunch: ${selectedTomorrowLunch}\nDinner: ${selectedTomorrowDinner}`);
+        }
+
+        // Initial population of dropdowns when the page loads
+        window.onload = populateDropdowns;
+    </script>
+</body>
+</html>
