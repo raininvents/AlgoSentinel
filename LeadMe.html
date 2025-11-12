@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIF Lead Form</title>
+<style>
+  body { font-family: Arial; text-align: center; padding: 40px; background: #f2f7f5; }
+  form { background: white; display: inline-block; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+  input { display: block; margin: 10px auto; padding: 10px; width: 80%; font-size: 16px; }
+  button { padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+  button:hover { background: #0056b3; }
+  #success { color: green; font-weight: bold; display: none; }
+</style>
+</head>
+<body>
+
+<h2>Get More Details about Financial Products</h2>
+<form id="leadForm">
+  <input type="text" id="name" placeholder="Your Name" required>
+  <input type="tel" id="phone" placeholder="Your Phone Number" required>
+  <button type="submit">Submit</button>
+  <p id="success">✅ Thank you! We’ll contact you soon.</p>
+</form>
+
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwC6uZZTPjarskivm92Jb1TLKom0yN0W9O5J23f6OK_VcrFBMw43cuzlfyo_2wDpej1ug/exec"; // replace this
+  const form = document.getElementById('leadForm');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = {
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value
+    };
+
+    fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(() => {
+      document.getElementById('success').style.display = 'block';
+      form.reset();
+    })
+    .catch(err => alert('Error! ' + err.message));
+  });
+</script>
+
+</body>
+</html>
