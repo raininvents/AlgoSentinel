@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="AlgoSentinel Dashboard">
+  <meta property="og:description" content="Discover, strategize, and trade with precision.">
+  <meta property="og:image" content="https://raininvents.github.io/AlgoSentinel/AlgoSentinelThumbnail.jpg">
+  <meta property="og:url" content="https://raininvents.github.io/AlgoSentinel/AlgoSentinelDashboard.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AlgoSentinel Dashboard">
+  <title>AlgoSentinel Dashboard</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: #101010;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      max-width: 100%;
+      min-width: 0; /* Important for proper flex behavior */
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(180px, 1fr)); /* Fixed 5 columns */
+      gap: 20px;
+      flex: 1; /* Take remaining space */
+      min-width: 0; /* Crucial for grid in flex container */
+    }
+    .newspanel {
+      width: 500px; /* Fixed width */
+      min-width: 500px; /* Prevent shrinking */
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 10px;
+      flex-shrink: 0;
+    }
+    .card {
+      width: 100%; /* Make card fill grid cell */
+      max-width: 300px; /* Maximum card width */
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cardtop {
+      background: #404040;
+      padding: 12px;
+      text-align: center;
+      border-radius: 18px 18px 0 0;
+      position: relative; /* Needed for absolute positioning */
+    }
+
+    .stars {
+      position: absolute;
+      font-size: 12px;
+      color: gold;
+      right: 12px;
+      top: 12px;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 18px;
+      color: #fff; /* your default color */
+      cursor: pointer;
+      margin-bottom: 6px;
+      transition: color 0.3s ease;
+    }
+
+    .title.favorite {
+      color: gold;
+      text-shadow: 0 0 3px rgba(255, 215, 0, 0.6);
+    }
+
+    .score-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 14px;
+    }
+
+    .alphaclass {
+      font-size: 21px;
+      margin-right: 2px;
+    }
+
+    .bricsclass {
+      font-size: 10px;
+      margin-right: 8px;
+    }
+
+    .score-bar-green {
+      flex-grow: 1;
+      background: #14552E;
+      border-radius: 8px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .score-fill-green {
+      background: linear-gradient(90deg, #3ab263, #00ff88);
+      height: 100%;
+      font-size: 11px;
+      color: black;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 5px;
+      white-space: nowrap;
+      border-radius: 0 8px 8px 0;
+    }
+    .score-bar-red {
+      flex-grow: 1;
+      background: #78021C;
+      border-radius: 8px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .score-fill-red {
+      background: linear-gradient(90deg, #D90432, #ff0088);
+      height: 100%;
+      font-size: 11px;
+      color: black;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 5px;
+      white-space: nowrap;
+      border-radius: 0 8px 8px 0;
+    }
+    .sell-text {
+      color: #C81B1A;
+    }
+    .buy-text {
+      color: #009B01;
+    }
+    .cardbottom,
+    .activebottom,
+    .strategybottom {
+      background: #ffffff;
+      padding: 2px;
+      margin-top: -6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      min-height: 150px;
+      border-radius: 0 0 18px 18px;
+    }
+
+    .info,
+    .activeinfo {
+      color: black;
+      margin: 2px 0;
+      font-size: 14px;
+      width: 100%;
+      display: flex;
+      line-height: 1.2;
+      justify-content: space-between;
+    }
+
+    .activeinfoheading {
+      margin: 2px 0;
+      font-size: 12px;
+      width: 100%;
+      text-align: center;
+      color: gray;
+      line-height: 1.2;
+      /*font-weight: bold;*/
+    }
+
+    .activeinfotitle {
+      margin: 2px 0;
+      font-size: 14px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      color: black;
+      line-height: 1.2;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1600px) {
+      .dashboard {
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 1300px) {
+      .dashboard {
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+      }
+    }
+    @media (max-width: 1000px) {
+      .dashboard {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+      }
+      .newspanel {
+        width: 450px; /* Increased width */
+        min-width: 450px;
+        max-width: 600px; /* Prevent it from getting too wide */
+        background: #1a1a1a;
+        border-radius: 12px;
+        padding: 20px; /* Increased padding for better spacing */
+        flex-shrink: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .dashboard {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+    .heading {
+      font-weight: bold;
+      font-size: 26px;
+      color: #fff; /* your default color */
+      text-align:center;
+    }
+    .chart-icon {
+      position: absolute;
+      left: 12px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;    /* optional for round icon */
+      object-fit: cover;
+      cursor: pointer;
+      border: 1px solid gold;
+    }
+    .chart-icon:hover {
+      transform: scale(1.1);
+      border-color: #ffcc00;
+    }
+  </style>
+  <script>
+  function openChart(symbol) {
+    // Convert NSE symbols to TradingView format
+    const tvSymbol = symbol;
+
+    // Create a popup window
+    const chartWindow = window.open('', '_blank', 'width=800,height=400,resizable=yes,scrollbars=yes');
+
+    // Inject TradingView widget HTML into the popup
+    chartWindow.document.write(`
+      <html>
+        <head>
+          <title>${tvSymbol} Chart</title>
+        </head>
+        <body style="margin:0;padding:0;">
+          <div id="tradingview_chart" style="height:100vh;width:100vw;"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/tv.js"><\/script>
+          <script type="text/javascript">
+            new TradingView.widget({
+              "width": "100%",
+              "height": "100%",
+              "symbol": "${tvSymbol}",
+              "interval": "D",
+              "timezone": "Asia/Kolkata",
+              "theme": "dark",
+              "style": "1",
+              "locale": "en",
+              "toolbar_bg": "#f1f3f6",
+              "hide_top_toolbar": false,
+              "hide_legend": false,
+              "save_image": false,
+              "container_id": "tradingview_chart"
+            });
+          <\/script>
+        </body>
+      </html>
+    `);
+  }
+  </script>
+</head>
+<body>
+  <div class="heading">AlgoSentinel Dashboard (04-Dec-2025)</div>
+  <div class="container">
+    <div class="dashboard">
+      <div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('HINDUNILVR')"></span><span class ='title'>HINDUNILVR</span><span class='stars'>★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:91.5%'>91.5</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 2470.0</span></div><div class='info'><span>Target </span><span>[1.1%] 2497.0</span></div><div class='info'><span>Stop Loss </span><span>[-1.0%] 2444.5</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Income Bull Put Spread</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='buy-text'>Buy</span><span>PE</span><span>2280.0</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>PE</span><span>2380.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>100.0%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>15.0</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>29985.0</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 50% max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Cut loss at 75% of max risk.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Cut loss if underlying closes below the short Put strike.</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('CIPLA')"></span><span class ='title'>CIPLA</span><span class='stars'>★★★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:87.2%'>87.2</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 1520.5</span></div><div class='info'><span>Target </span><span>[1.9%] 1549.7</span></div><div class='info'><span>Stop Loss </span><span>[-0.0%] 1520.0</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>No tradable option setups available</span></div></div><div class='strategybottom hidden'><div class='activeinfoheading'><span>No tradable option setups available</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('TORNTPHARM')"></span><span class ='title'>TORNTPHARM</span><span class='stars'>★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:86.6%'>86.6</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 3790.6</span></div><div class='info'><span>Target </span><span>[2.6%] 3891.0</span></div><div class='info'><span>Stop Loss </span><span>[-2.1%] 3711.8</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Impulse Bull Call Spread</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='buy-text'>Buy</span><span>CE</span><span>3700.0</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>CE</span><span>4000.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>45.4%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>45137.5</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>29862.5</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Book partial profits if price reaches midpoint between long and short strike.</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take full profit if spread value reaches 70–80% of maximum value.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Exit if long strike breaks down on closing basis.</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('SBILIFE')"></span><span class ='title'>SBILIFE</span><span class='stars'>★★★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:83.7%'>83.7</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 2002.9</span></div><div class='info'><span>Target </span><span>[2.5%] 2053.4</span></div><div class='info'><span>Stop Loss </span><span>[-0.2%] 1999.2</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>No tradable option setups available</span></div></div><div class='strategybottom hidden'><div class='activeinfoheading'><span>No tradable option setups available</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('BOSCHLTD')"></span><span class ='title'>BOSCHLTD</span><span class='stars'>★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:80.8%'>80.8</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 36920.0</span></div><div class='info'><span>Target </span><span>[1.5%] 37480.0</span></div><div class='info'><span>Stop Loss </span><span>[-0.9%] 36580.0</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Conservative Bull Put Spread</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='buy-text'>Buy</span><span>PE</span><span>34500.0</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>PE</span><span>36000.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>76.7%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>6088.75</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>31411.25</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 40% max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Cut loss at 50% of max risk.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close if short strike breached.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close position when DTE ≤ 7 .</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('NAUKRI')"></span><span class ='title'>NAUKRI</span><span class='stars'>★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:73.0%'>73.0</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 1395.2</span></div><div class='info'><span>Target </span><span>[1.8%] 1420.7</span></div><div class='info'><span>Stop Loss </span><span>[-1.4%] 1375.4</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Short Put</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>PE</span><span>1360.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>74.4%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>6637.5</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>503362.5</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 50-70% of max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Exit if stock breaches strike by 5%.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close position when DTE ≤ 5 .</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('ABB')"></span><span class ='title'>ABB</span><span class='stars'>★★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:71.5%'>71.5</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 5173.0</span></div><div class='info'><span>Target </span><span>[3.2%] 5338.3</span></div><div class='info'><span>Stop Loss </span><span>[-1.1%] 5117.2</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Short Put</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>PE</span><span>5050.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>75.8%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>5775.0</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>625475.0</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 50-70% of max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Exit if stock breaches strike by 5%.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close position when DTE ≤ 5 .</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('KOTAKBANK')"></span><span class ='title'>KOTAKBANK</span><span class='stars'>&nbsp;</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:67.2%'>67.2</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 2134.5</span></div><div class='info'><span>Target </span><span>[1.1%] 2157.7</span></div><div class='info'><span>Stop Loss </span><span>[-1.2%] 2108.5</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Short Put</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>PE</span><span>2080.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>80.6%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>4520.0</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>827480.0</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 50-70% of max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Exit if stock breaches strike by 5%.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close position when DTE ≤ 5 .</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('BHARTIARTL')"></span><span class ='title'>BHARTIARTL</span><span class='stars'>★★★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:65.1%'>65.1</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 2105.7</span></div><div class='info'><span>Target </span><span>[3.8%] 2186.7</span></div><div class='info'><span>Stop Loss </span><span>[-0.8%] 2089.4</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Short Put</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>PE</span><span>2060.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>79.4%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>6388.75</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>972111.25</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 50-70% of max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Exit if stock breaches strike by 5%.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close position when DTE ≤ 5 .</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('POLYCAB')"></span><span class ='title'>POLYCAB</span><span class='stars'>★★</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-green'><div class='score-fill-green' style='width:57.3%'>57.3</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 7372.0</span></div><div class='info'><span>Target </span><span>[2.5%] 7556.7</span></div><div class='info'><span>Stop Loss </span><span>[-1.0%] 7297.3</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Conservative Bull Put Spread</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='buy-text'>Buy</span><span>PE</span><span>7000.0</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>PE</span><span>7200.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>74.1%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>5243.75</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>19756.25</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 40% max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Cut loss at 50% of max risk.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close if short strike breached.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close position when DTE ≤ 7 .</span></div></div></div><div class ='card'><div class ='cardtop'><div><span><img src='ChartIcon.png' class='chart-icon' onclick="openChart('INDIGO')"></span><span class ='title'>INDIGO</span><span class='stars'>&nbsp;</span></div><div class='score-wrapper'><span class='alphaclass'>&#x3B1;</span><span class='bricsclass'>BRICS</span><div class='score-bar-red'><div class='score-fill-red' style='width:68.0%'>68.0</div></div></div></div><div class='cardbottom'> <div class='info'></div><div class='info'><span>Price </span><span> 5433.5</span></div><div class='info'><span>Target </span><span>[1.1%] 5375.2</span></div><div class='info'><span>Stop Loss </span><span>[-3.8%] 5638.3</span></div></div><div class='activebottom hidden'><div class='activeinfoheading'><span>Conservative Bear Call Spread</span></div><div class='activeinfotitle'><span>Position</span><span>Option</span><span>Strike</span></div><div class='activeinfo'><span class='sell-text'>Sell</span><span>CE</span><span>5650.0</span></div><div class='activeinfo'><span class='buy-text'>Buy</span><span>CE</span><span>5850.0</span></div></div><div class='strategybottom hidden'><div class='activeinfo'><span>Prob. of Profit</span><span class='buy-text'>76.5%</span></div><div class='activeinfo'><span>Max. Profit</span><span class='buy-text'>4605.0</span></div><div class='activeinfo'><span>Max. Loss</span><span class='sell-text'>25395.0</span></div><div class='activeinfo'><span></span><span></span></div><div class='activeinfo'><span>Management Rules</span></div><div class='activeinfo'><span class='buy-text'>&#x25CF; Take profit at 40% max profit.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Cut loss at 50% of max risk.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close if short strike breached.</span></div><div class='activeinfo'><span class='sell-text'>&#x25CF; Close position when DTE ≤ 7 .</span></div></div></div>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll(".card").forEach(card => {
+    const states = [
+      card.querySelector(".cardbottom"),
+      card.querySelector(".activebottom"),
+      card.querySelector(".strategybottom")
+    ];
+
+    let current = 0;
+
+    // 💛 Toggle favorite on title click
+    const title = card.querySelector(".title");
+    title.addEventListener("click", (e) => {
+      title.classList.toggle("favorite");
+      e.stopPropagation(); // prevent interfering with bottom section toggles
+    });
+
+    // Cycle card states on section click
+    card.addEventListener("click", (e) => {
+      if (!e.target.closest('.cardbottom') &&
+          !e.target.closest('.activebottom') &&
+          !e.target.closest('.strategybottom')) {
+        return;
+      }
+
+      states[current].classList.add("hidden");
+      current = (current + 1) % states.length;
+      states[current].classList.remove("hidden");
+      e.stopPropagation();
+    });
+    });
+</script>
+</body>
+</html>
