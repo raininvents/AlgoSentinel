@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interest Form</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+    }
+    .container {
+        max-width: 500px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .checkbox-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+    input[type="text"], input[type="tel"], textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 15px;
+    }
+    textarea {
+        height: 80px;
+        resize: vertical;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #0078ff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #005fcc;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>What are you interested in?</h2>
+
+    <!-- Hidden iframe for form submission -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+    <form id="interestForm"
+        action="https://docs.google.com/forms/d/e/1FAIpQLScLqpHnL5vC8tcGCJaXLp0HRTj2zkI39PdDiopqmxsfEKS-JQ/formResponse"
+        method="POST"
+        target="hidden_iframe">
+
+        <!-- CHECKBOX GROUP (entry.1290221835) -->
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="entry.1290221835" value="Mutual Funds"> Mutual Funds</label>
+            <label><input type="checkbox" name="entry.1290221835" value="Portfolio Design"> Portfolio Design</label>
+            <label><input type="checkbox" name="entry.1290221835" value="Specialized Investment Fund"> Specialized Investment Fund</label>
+            <label><input type="checkbox" name="entry.1290221835" value="Goal Based Planning"> Goal Based Planning</label>
+            <label><input type="checkbox" name="entry.1290221835" value="Financial Training"> Financial Training</label>
+            <label><input type="checkbox" name="entry.1290221835" value="Algo Trading"> Algo Trading</label>
+            <label><input type="checkbox" name="entry.1290221835" value="Research Based Trading"> Research Based Trading</label>
+
+            <!-- Default -->
+            <label><input type="checkbox" name="entry.1290221835" value="Health Insurance" checked> Health Insurance</label>
+
+            <label><input type="checkbox" name="entry.1290221835" value="Life Insurance"> Life Insurance</label>
+            <label><input type="checkbox" name="entry.1290221835" value="AIF"> AIF</label>
+            <label><input type="checkbox" name="entry.1290221835" value="PMS"> PMS</label>
+            <label><input type="checkbox" name="entry.1290221835" value="Research & Analysis"> Research & Analysis</label>
+        </div>
+
+        <!-- NAME (entry.1323699595) -->
+        <label>Your Name:
+            <input type="text" name="entry.1323699595" placeholder="Enter your name" required>
+        </label>
+
+        <!-- PHONE (entry.570940837) -->
+        <label>Phone Number:
+            <input type="tel" name="entry.570940837" placeholder="Enter phone number" required>
+        </label>
+
+        <!-- COMMENTS (entry.561159688) -->
+        <label>Comments (Optional):
+            <textarea name="entry.561159688" placeholder="Add any details or questions..."></textarea>
+        </label>
+
+        <!-- SUBMIT -->
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<!-- Redirect Script -->
+<script>
+document.getElementById("interestForm").addEventListener("submit", function() {
+    // Redirect immediately after submission
+    setTimeout(function() {
+        window.location.href = "https://www.rainventures.in";  // <-- CHANGE THIS
+    }, 500);
+});
+</script>
+
+</body>
+</html>
