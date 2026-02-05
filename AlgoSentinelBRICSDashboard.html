@@ -1,0 +1,1270 @@
+
+    <!doctype html>
+    <html>
+    <head>
+    <meta charset="utf-8"/>
+    <title>Momentum Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <style>
+    :root{
+      --card-width: 320px;
+      --radius: 12px;
+      --font: "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body{
+      font-family: var(--font);
+      background:#f4f6f8;
+      margin:18px;
+    }
+
+    .header{
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    h1{
+      margin:0;
+      font-size:28px;
+    }
+
+    .sub{
+      font-size:13px;
+      color:#666;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));
+      gap:18px;
+    }
+
+    .card{
+      border-radius:var(--radius);
+      padding:10px;
+      color:#fff;
+      box-shadow:0 8px 22px rgba(0,0,0,0.15);
+    }
+
+    /* ---------- Strategy Box ---------- */
+    .strategy-box{
+      background:#ffffff;
+      color:#111;
+      border-radius:10px;
+      padding:15px;
+      margin-top:8px;
+    }
+
+    /* ---------- Header ---------- */
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-weight:800;
+      font-size:15px;
+      border-bottom:1px solid #e5e7eb;
+      padding-bottom:6px;
+    }
+
+    /* ---------- Alpha ---------- */
+    .alpha-box{
+      display:flex;
+      align-items:center;
+      margin:8px 0;
+    }
+
+    .alpha-label{
+      font-weight:800;
+      font-size:12px;
+      width:70px;
+    }
+
+    .progress{
+      flex:1;
+      height:18px;
+      background:#e5e7eb;
+      border-radius:10px;
+      overflow:hidden;
+    }
+
+    .progress-fill{
+      height:100%;
+      font-size:12px;
+      font-weight:800;
+      color:#fff;
+      display:flex;
+      align-items:center;     /* vertical center */
+      justify-content:center; /* horizontal center */
+    }
+
+    /* ---------- Strategy ---------- */
+    .strategy-pill{
+     text-align:center;
+      font-size:14px;
+      font-weight:800;
+      padding:4px 12px;
+      color:#fff;
+      background:#2f2f2f;        /* dark grey */
+      border-radius:999px;
+      margin:2px auto;
+      display:inline-block;
+      letter-spacing:0.4px;
+    }
+    .leg-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+     .action-icon {
+       font-size:11px;
+      font-weight:700;
+      width:16px;
+      height:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:rgba(0,0,0,0.08);
+    }
+
+    .action-buy .action-icon {
+      background: #0b7a2a;
+      color: white;
+    }
+
+    .action-sell .action-icon {
+      background: #b91c1c;
+      color: white;
+    }
+
+    .action-label {
+      font-weight: 700;
+    }
+
+    /* ---------- Metrics ---------- */
+    .metric-strip{
+      display:grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items:center;
+      gap:5px;
+      margin:2px 0;
+    }
+
+        .metric{
+      text-align:center;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .metric strong{
+      display:block;
+      font-size:14px;
+      margin-top:4px;
+    }
+    .profit strong{ color:#14532d; }
+    .loss strong{ color:#7f1d1d; }
+    .metric.pop{
+      color:#111;
+    }
+
+    /* ---------- POP Circle ---------- */
+    .pop-circle{
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:16px;
+      line-height:1.1;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.06);
+    }
+
+    .pop-circle span{
+      font-size:11px;
+      font-weight:700;
+      opacity:0.85;
+    }
+
+    /* POP >= 50%  → Green */
+    .pop-good{
+      background:rgba(22, 163, 74, 0.15);
+      color:#166534;
+      border:2px solid rgba(22,163,74,0.35);
+    }
+
+    /* POP < 50% → Red */
+    .pop-bad{
+      background:rgba(220, 38, 38, 0.15);
+      color:#7f1d1d;
+      border:2px solid rgba(220,38,38,0.35);
+    }
+
+
+    .metric.profit{ border-left:3px solid #16a34a; }
+    .metric.loss{ border-left:3px solid #dc2626; }
+
+    /* ---------- Target / SL ---------- */
+    .ts-grid{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    }
+    .ts-grid .lotsize {
+    text-align: center;
+    font-size: 12px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.35);  /* DARK overlay */
+    padding: 6px 10px;
+    border-radius: 6px;
+    }
+    .ts-grid .lotsize strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    }
+    .target{
+      background:#ecfdf5;
+      color:#065f46;
+      font-weight:800;
+      padding:6px;
+      border-radius:6px;
+      text-align:center;
+    }
+
+    .stop{
+      background:#fef2f2;
+      color:#7f1d1d;
+      font-weight:800;
+      padding:6px;
+      border-radius:6px;
+      text-align:center;
+    }
+
+    /* ---------- Legs ---------- */
+    .legs-list{
+      margin-top:8px;
+      font-size:12px;
+    }
+
+    .leg-row{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      margin:3px 0;
+    }
+
+    .action-buy{ color:#16a34a; font-weight:800; }
+    .action-sell{ color:#dc2626; font-weight:800; }
+    .legs-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap:6px;
+      margin-top:6px;
+    }
+
+    /* Individual leg box */
+    .leg-cell{
+      display:flex;
+      align-items:center;
+      gap:4px;
+      font-size:10px;
+      line-height:1;
+      padding:2px 2px;
+      border-radius:6px;
+      white-space:nowrap;
+    }
+
+    /* BUY background:#ecf7f1; / SELL background:#fdeeee; styling */
+    .action-buy{
+      background:#fafafa;
+      border-color:#3ba272;
+      color:#1e6b4e;
+    }
+
+    .action-sell{
+      background:#ffffff;
+      border-color:#d85b5b;
+      color:#8b1e1e;
+    }
+
+    /* Top row */
+    .leg-top{
+      font-weight:700;
+      display:flex;
+      justify-content:center;
+      gap:6px;
+    }
+
+    /* Bottom row */
+    .leg-bottom{
+      font-size:12px;
+      opacity:0.85;
+    }
+
+    /* Placeholder */
+    .leg-empty{
+      background:#ffffff;
+      color:#bbb;
+      font-size:18px;
+    }
+    .leg-action-text{
+      font-weight:600;
+    }
+    .leg-strike{
+      font-size:11px;
+      opacity:0.85;
+    }
+    .management-rules.compact {
+    margin-top: 6px;
+    padding: 4px 6px;
+    }
+    .management-rules.compact h4 {
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .management-rules.compact ul {
+        padding-left: 14px;
+        margin: 0;
+    }
+    .management-rules.compact li {
+        font-size: 12px;
+        line-height: 1.2;
+        margin-bottom: 2px;      /* 🔑 reduces height */
+        white-space: nowrap;     /* 🔑 single line */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .rule-negative {
+        color: #b32626;
+    }
+    .rule-positive {
+        color: #0f7a3a;
+    }
+    .rule-neutral {
+        color: #555;
+    }
+    .page-positional {
+        background: linear-gradient(
+        180deg,
+        #e3ebf3 0%,   
+        #f7f7f7 55%
+    );
+    }
+    .page-intraday {
+        background: linear-gradient(
+        180deg,
+        #fff0db 0%,   /* stronger top tint */
+        #f7f7f7 55%
+    );
+    }
+    </style>
+    </head>
+
+    <body class="page-positional">
+    <div class="header">
+      <h1>AlgoSentinel αBRICS Positional Trading Dashboard</h1>
+      <div class="sub">Disclaimer: This content is for educational purposes only. It is not a recommendation to buy or sell any securities or derivatives. Trading involves risk. Past performance is not indicative of future results.</div>
+    </div>
+
+    <div class="grid">
+    
+    <div class="card" style="background:#0f7a3a">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>GRASIM</div>
+                <div>2,858.60</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:88.44420130339145%;background:#0f7a3a">
+                        88.4%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Steady Bull Put Spread</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>6,362.50</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>13,637.50</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 4,135.62</div>
+                <div class="lotsize">× 250</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-buy">
+                <span class="action-icon">B</span>
+                <span class="leg-action-text">BUY</span>
+                <span class="leg-strike">2760 PE</span>
+                <span class="leg-premium">₹23.00</span>
+            </div>
+        
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">2840 PE</span>
+                <span class="leg-premium">₹48.45</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Cut loss at 75% of max risk.">
+                    🛑 Cut loss at 75% of max risk.
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#0f7a3a">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>PIDILITIND</div>
+                <div>1,470.00</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:76.06445604503106%;background:#0f7a3a">
+                        76.1%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Short Put</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>8,025.00</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>711,975.00</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 4,815.00</div>
+                <div class="lotsize">× 500</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">1440 PE</span>
+                <span class="leg-premium">₹16.05</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close position when DTE ≤ 5 .">
+                    🛑 Close position when DTE ≤ 5 .
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#0f7a3a">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>APOLLOHOSP</div>
+                <div>7,129.00</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:71.32620224193259%;background:#0f7a3a">
+                        71.3%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Short Put</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>10,381.25</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>852,118.75</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 6,228.75</div>
+                <div class="lotsize">× 125</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">6900 PE</span>
+                <span class="leg-premium">₹83.05</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close position when DTE ≤ 5 .">
+                    🛑 Close position when DTE ≤ 5 .
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#0f7a3a">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>TRENT</div>
+                <div>4,121.20</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:69.370774915989%;background:#0f7a3a">
+                        69.4%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Defensive Bull Put Spread</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>6,100.00</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>13,900.00</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 4,575.00</div>
+                <div class="lotsize">× 100</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-buy">
+                <span class="action-icon">B</span>
+                <span class="leg-action-text">BUY</span>
+                <span class="leg-strike">3900 PE</span>
+                <span class="leg-premium">₹36.35</span>
+            </div>
+        
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">4100 PE</span>
+                <span class="leg-premium">₹97.35</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close if short strike breached.">
+                    🛑 Close if short strike breached.
+                </li>
+            
+                <li class="rule-negative" title="Close position when DTE ≤ 5 .">
+                    🛑 Close position when DTE ≤ 5 .
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#0f7a3a">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>TATACONSUM</div>
+                <div>1,156.40</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:69.00738505988248%;background:#0f7a3a">
+                        69.0%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Bull Put Spread</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>5,280.00</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        72%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>11,220.00</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 3,432.00</div>
+                <div class="lotsize">× 550</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-buy">
+                <span class="action-icon">B</span>
+                <span class="leg-action-text">BUY</span>
+                <span class="leg-strike">1110 PE</span>
+                <span class="leg-premium">₹8.45</span>
+            </div>
+        
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">1140 PE</span>
+                <span class="leg-premium">₹18.05</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close if short strike breached.">
+                    🛑 Close if short strike breached.
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#0f7a3a">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>DRREDDY</div>
+                <div>1,248.20</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:68.4918442632711%;background:#0f7a3a">
+                        68.5%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Defensive Bull Put Spread</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>6,437.50</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>18,562.50</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 4,828.12</div>
+                <div class="lotsize">× 625</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-buy">
+                <span class="action-icon">B</span>
+                <span class="leg-action-text">BUY</span>
+                <span class="leg-strike">1200 PE</span>
+                <span class="leg-premium">₹8.15</span>
+            </div>
+        
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">1240 PE</span>
+                <span class="leg-premium">₹18.45</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close if short strike breached.">
+                    🛑 Close if short strike breached.
+                </li>
+            
+                <li class="rule-negative" title="Close position when DTE ≤ 5 .">
+                    🛑 Close position when DTE ≤ 5 .
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#0f7a3a">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>ALKEM</div>
+                <div>5,672.50</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:61.670947683298806%;background:#0f7a3a">
+                        61.7%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Budget Bull Call Spread</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>4,868.75</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        65%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>1,381.25</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 1,381.25</div>
+                <div class="lotsize">× 125</div>
+                <div class="stop">🛑 1,105.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-buy">
+                <span class="action-icon">B</span>
+                <span class="leg-action-text">BUY</span>
+                <span class="leg-strike">5700 CE</span>
+                <span class="leg-premium">₹132.05</span>
+            </div>
+        
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">5750 CE</span>
+                <span class="leg-premium">₹121.00</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close position when DTE ≤ 7 if position is unprofitable.">
+                    🛑 Close position when DTE ≤ 7 if position is unprofitable.
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#b32626">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>HAL</div>
+                <div>4,046.00</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:89.06346093307573%;background:#b32626">
+                        89.1%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Wide Bear Put Spread</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>29,902.50</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        60%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>15,097.50</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 16,607.25</div>
+                <div class="lotsize">× 150</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">3700 PE</span>
+                <span class="leg-premium">₹54.85</span>
+            </div>
+        
+            <div class="leg-cell action-buy">
+                <span class="action-icon">B</span>
+                <span class="leg-action-text">BUY</span>
+                <span class="leg-strike">4000 PE</span>
+                <span class="leg-premium">₹155.50</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#b32626">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>INFY</div>
+                <div>1,523.10</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:78.32874047297538%;background:#b32626">
+                        78.3%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Short Call</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>8,160.00</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>∞</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 4,896.00</div>
+                <div class="lotsize">× 400</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">1580 CE</span>
+                <span class="leg-premium">₹20.40</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close position when DTE ≤ 5 .">
+                    🛑 Close position when DTE ≤ 5 .
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#b32626">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>MPHASIS</div>
+                <div>2,652.40</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:72.95333846696855%;background:#b32626">
+                        73.0%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Short Call</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>12,196.25</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>∞</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 7,317.75</div>
+                <div class="lotsize">× 275</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">2750 CE</span>
+                <span class="leg-premium">₹44.35</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close position when DTE ≤ 5 .">
+                    🛑 Close position when DTE ≤ 5 .
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="card" style="background:#b32626">
+        <div class="strategy-box">
+
+            <div class="card-header">
+                <div>HCLTECH</div>
+                <div>1,609.60</div>
+            </div>
+
+            <div class="alpha-box">
+                <div class="alpha-label">αBRICS</div>
+                <div class="progress">
+                    <div class="progress-fill" style="width:60.63139496910265%;background:#b32626">
+                        60.6%
+                    </div>
+                </div>
+            </div>
+
+            <div class="strategy-pill">Defensive Bear Call Spread</div>
+
+            <div class="metric-strip">
+                <div class="metric profit">
+                    Max Profit
+                    <strong>5,827.50</strong>
+                </div>
+
+                <div class="pop-wrap">
+                    <div class="pop-circle pop-good">
+                        75%
+                        <span>PoP</span>
+                    </div>
+                </div>
+
+                <div class="metric loss">
+                    Max Loss
+                    <strong>15,172.50</strong>
+                </div>
+            </div>
+
+            <div class="ts-grid">
+                <div class="target">🎯 4,370.62</div>
+                <div class="lotsize">× 350</div>
+                <div class="stop">🛑 5,000.00</div>
+            </div>
+            <div class="legs-list">
+                <div class='legs-grid'>
+            <div class="leg-cell action-sell">
+                <span class="action-icon">S</span>
+                <span class="leg-action-text">SELL</span>
+                <span class="leg-strike">1640 CE</span>
+                <span class="leg-premium">₹28.15</span>
+            </div>
+        
+            <div class="leg-cell action-buy">
+                <span class="action-icon">B</span>
+                <span class="leg-action-text">BUY</span>
+                <span class="leg-strike">1700 CE</span>
+                <span class="leg-premium">₹11.50</span>
+            </div>
+        
+                <div class="leg-cell leg-empty"></div>
+            
+                <div class="leg-cell leg-empty"></div>
+            </div>
+            </div>
+            <div class="adjustments">
+                
+        <div class="management-rules compact">
+          <h4>Management Rules</h4>
+          <ul>
+        
+                <li class="rule-negative" title="Close if short strike breached.">
+                    🛑 Close if short strike breached.
+                </li>
+            
+                <li class="rule-negative" title="Close position when DTE ≤ 5 .">
+                    🛑 Close position when DTE ≤ 5 .
+                </li>
+            
+          </ul>
+        </div>
+        
+            </div>
+        </div>
+    </div>
+    
+    </div>
+    </body>
+    </html>
+    
