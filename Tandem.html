@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TANDEM</title>
+<style>
+:root{color-scheme:light;--bg:#fbf3e1;--card:#fffdf6;--ink:#3b2a1a;--mut:#8a7660;--line:#e8d9b8;--acc:#d9822b;--ok:#4f8a3c;--bad:#b5533c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1d1812;--card:#2a231a;--ink:#f3e8d2;--mut:#b5a285;--line:#443a2b;--acc:#f0a04b;--ok:#8cc46f;--bad:#e08a72}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1d1812;--card:#2a231a;--ink:#f3e8d2;--mut:#b5a285;--line:#443a2b;--acc:#f0a04b;--ok:#8cc46f;--bad:#e08a72}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 "Trebuchet MS",Verdana,sans-serif}
+header{padding:14px;text-align:center}h1{margin:0;font-size:25px}header p{margin:2px 0 0;color:var(--mut);font-size:14px}
+nav{display:flex;gap:6px;padding:0 12px 8px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}nav button{flex:1}
+button{font:inherit;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:7px 11px;cursor:pointer}
+button.on,button.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:bold}
+main{max-width:1000px;margin:auto;padding:4px 12px 90px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.sp{flex:1;min-width:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.chip{border-radius:20px;padding:4px 10px;font-size:14px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px}
+.col h3{margin:4px 2px;font-size:15px}.col .card{padding:8px;min-height:60px}
+.task{border:2px solid var(--line);border-left:8px solid var(--p);border-radius:12px;padding:8px;margin-bottom:8px;background:var(--bg);cursor:pointer}
+.task b{display:block;word-break:break-word}.mut{color:var(--mut);font-size:13px}.late{color:var(--bad);font-weight:bold}
+.tb{display:flex;gap:4px;margin-top:6px}.tb button{padding:3px 8px;font-size:13px}
+.field{font-size:26px;letter-spacing:2px;line-height:1.5;word-break:break-all}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);transition:width .5s}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:18px;border-radius:30px;padding:12px 18px;z-index:6;box-shadow:0 3px 10px #0004}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;z-index:20}
+#mbox{background:var(--card);border-radius:20px 20px 0 0;padding:16px;width:100%;max-width:520px;max-height:92vh;overflow:auto}
+label{display:block;font-size:13px;color:var(--mut);margin-top:8px}
+input,select,textarea{font:inherit;width:100%;padding:7px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{font-size:26px;font-weight:bold}
+.fx{position:fixed;top:-40px;font-size:30px;z-index:50;pointer-events:none;animation:fall 2.2s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.7}}
+#toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ok);color:#fff;padding:10px 18px;border-radius:20px;z-index:60;display:none;font-weight:bold}
+.log{font-size:13px;color:var(--mut);border-left:3px solid var(--line);padding-left:8px;margin:4px 0}
+</style></head><body>
+<header><h1>🚜 TANDEM</h1><p id="sub"></p></header>
+<nav id="nav"></nav><main id="app"></main>
+<button class="pri fab" data-new>＋ New task</button>
+<div id="toast"></div><div id="modal"><div id="mbox"></div></div>
+<script>
+const CAT={home:["Home & Barn","🏡"],kitchen:["Kitchen","🍞"],garden:["Garden & Yard","🥬"],kids:["Kids & School","🐣"],money:["Money & Market","🪙"],health:["Health","🍯"],errand:["Errands","🛻"],work:["Work","🌾"]};
+const ST={todo:["To do","🌰"],doing:["In progress","🌱"],stuck:["Stuck","🥀"],done:["Done","🌻"]};
+const PRI={high:["High","#b5533c"],med:["Medium","#d9a62a"],low:["Low","#4f8a3c"]};
+const EMO=["🧑‍🌾","👩‍🌾","👨‍🌾","👴","👵","🧒","👧","👦","🧔","👩","👨","🐮","🐔"];
+const WIN=["Harvest time! 🌻","Another one in the barn!","Plucked and packed!","Fresh from the field!","Closed out — well done!"];
+const DEF={people:[["Nishanth","👨‍🌾"],["Roopa","👩‍🌾"],["Jatin","🧑‍🌾"]].map((p,i)=>({id:"p"+i,n:p[0],e:p[1]})),tasks:[],f:"all",tab:"field",nid:1,np:6,history:[],start:""};
+let S;try{S=JSON.parse(localStorage.getItem("tandem")||"null")}catch(e){}
+S=Object.assign({},DEF,S||{});
+let live=false,DB=null,mine="",ME="";try{ME=localStorage.getItem("farmme")||""}catch(e){}
+const save=()=>{if(live)return;try{localStorage.setItem("tandem",JSON.stringify(S))}catch(e){}};
+const cl=o=>JSON.parse(JSON.stringify(o));
+const uid=()=>"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const byMe=()=>ME?P(ME).n:"";
+const pushT=t=>{S.tasks.push(t);put("tasks",t)};
+// ====== PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ======
+const CFG={url:"https://script.google.com/macros/s/AKfycbxpOfZEkiJWV_j7fs0KchywDY7LnxIybZNn6f9SedPKmOKWb7mOl2LN3PcC_planFfInQ/exec"};
+// ==========================================================
+let CODE="";try{CODE=localStorage.getItem("tandemcode")||""}catch(e){}
+const setMe=id=>{ME=id;try{localStorage.setItem("farmme",id)}catch(e){}};
+let busy=0,q=Promise.resolve(),lastSig="";
+function send(b){busy++;q=q.then(()=>fetch(CFG.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({code:CODE},b))}).then(r=>r.json()).then(r=>{if(r.error)throw r.error})).catch(e=>{werr(e);lastSig=""}).then(()=>{busy--})}
+function put(k,o){if(live)send({action:"put",kind:k,id:o.id,obj:cl(o)})}
+function rm(k,id){if(live)send({action:"del",kind:k,id:id})}
+function werr(e){console.error(e);toast("⚠ Couldn’t sync — check your internet connection.")}
+function askCode(){$("#nav").innerHTML="";$("#app").innerHTML=`<div class="card" style="max-width:420px;margin:20px auto"><h3 style="margin-top:0">🔑 Family code</h3><p class="mut">Enter the family code you set in the Google Apps Script. You only need to do this once on this phone.</p><input id="codein" placeholder="family code"><div style="margin-top:10px"><button class="pri" data-code>Connect</button></div></div>`}
+function askWho(){$("#nav").innerHTML="";$("#app").innerHTML=`<div class="card" style="max-width:420px;margin:20px auto"><h3 style="margin-top:0">👋 Who’s using this phone?</h3><p class="mut">New tasks will default to you, and you’ll get an alert when someone assigns you something.</p>${S.people.map(p=>`<button class="chip" style="width:100%;margin:4px 0;text-align:left;font-size:18px" data-iam="${p.id}">${p.e} ${esc(p.n)}</button>`).join("")}<div class="row" style="margin-top:10px"><input id="nm" placeholder="Someone else? Type your name" class="sp"><button data-newme>Add</button></div></div>`}
+async function pull(force){if(busy||!live)return;
+try{const r=await fetch(CFG.url+"?code="+encodeURIComponent(CODE)).then(x=>x.json());
+if(r.error){if(r.error==="bad code"){CODE="";try{localStorage.removeItem("tandemcode")}catch(e){}askCode();toast("Wrong family code")}else throw r.error;return}
+if(busy)return;const sig=JSON.stringify(r),first=!loaded;if(sig===lastSig&&!force)return;lastSig=sig;
+const old=Object.fromEntries(S.tasks.map(t=>[t.id,t.st]));
+S.people=r.people.sort((a,b)=>a.o-b.o);S.tasks=r.tasks;
+if(!S.people.length){S.people=DEF.people.map((p,i)=>Object.assign({o:i},p));S.people.forEach(p=>put("people",p))}
+const m=r.meta.find(x=>x.id==="m");
+if(m){S.history=m.history||[];S.start=m.start}else{S.history=[];S.start=td();put("meta",{id:"m",history:[],start:S.start})}
+loaded=true;
+if(!first)S.tasks.forEach(t=>{if(old[t.id]===undefined&&t.who===ME&&t.by&&t.by!==ME)toast("📥 "+P(t.by).n+" assigned you: "+t.t);else if(t.st==="done"&&old[t.id]&&old[t.id]!=="done"&&t.id!==mine)toast("🌻 "+P(t.who).n+" finished “"+t.t+"”")});
+const ae=document.activeElement;if(first||!(ae&&/INPUT|SELECT|TEXTAREA/.test(ae.tagName)&&$("#app").contains(ae)))render()}
+catch(e){console.error(e);if(!loaded)$("#app").innerHTML=`<div class="card" style="max-width:420px;margin:20px auto"><b>Couldn’t reach the server</b><p class="mut">Check your internet and the Web App URL, then try again.</p><button class="pri" data-sync>Try again</button></div>`}}
+let loaded=false,timer=0;
+function init(){if(CFG.url.startsWith("PASTE")){render();return}
+if(!CODE){askCode();return}
+live=true;S.tasks=[];S.people=[];$("#app").innerHTML="<p class=mut style='text-align:center'>Loading…</p>";pull(true);
+if(!timer){timer=setInterval(()=>{if(!document.hidden)pull()},10000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()})}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const td=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const fd=d=>new Date(d+"T00:00").toLocaleDateString("en",{day:"numeric",month:"short"});
+const P=id=>S.people.find(p=>p.id===id)||{n:"Unassigned",e:"❔"};
+const late=t=>t.due&&t.st!=="done"&&t.due<td();
+const now=()=>new Date().toLocaleString("en",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+function render(){if(!S.start)S.start=td();
+if(S.people.length&&!S.people.some(p=>p.id===ME)){askWho();return}
+const open=S.tasks.filter(t=>t.st!=="done").length;
+$("#sub").textContent=open+" open · "+S.tasks.filter(late).length+" overdue · "+S.tasks.filter(t=>t.st==="done").length+" harvested · "+(live?"🔗 synced with family":"💾 saved on this device");
+$("#nav").innerHTML=[["field","🌾 Field"],["family","👨‍👩‍👧 Family"],["report","🏆 Harvest"]].map(t=>`<button class="${S.tab===t[0]?"on":""}" data-tab="${t[0]}">${t[1]}</button>`).join("");
+$("#app").innerHTML={field,family,report}[S.tab]();save()}
+function field(){
+const L=S.tasks.filter(t=>S.f==="all"||t.who===S.f);
+const chips=[["all","👨‍👩‍👧 Everyone"],...S.people.map(p=>[p.id,p.e+" "+p.n])].map(c=>`<button class="chip ${S.f===c[0]?"on":""}" data-f="${c[0]}">${c[1]}</button>`).join("");
+const plot=L.length?L.map(t=>ST[t.st][1]).join(""):"🌱";
+const d=L.filter(t=>t.st==="done").length;
+const cols=Object.keys(ST).map(k=>{const ts=L.filter(t=>t.st===k).sort((a,b)=>(a.due||"9")>(b.due||"9")?1:-1);
+return `<div class="col"><h3>${ST[k][1]} ${ST[k][0]} (${ts.length})</h3><div class="card">${ts.map(card).join("")||`<div class="mut">Nothing here</div>`}</div></div>`}).join("");
+return `<div class="chips">${chips}</div><div class="card"><div class="row"><b>Your field</b><span class="mut sp">each plant is one task: 🌰 to do · 🌱 growing · 🥀 stuck · 🌻 done</span><b>${d}/${L.length}</b></div><div class="field">${plot}</div><div class="bar"><i style="width:${L.length?d/L.length*100:0}%"></i></div></div>
+${S.tasks.length?"":`<div class="card" style="margin-top:10px">Nothing planted yet! Tap <b>＋ New task</b> to assign your first action item, or <button data-sample>add 3 samples</button></div>`}<div class="cols">${cols}</div>`}
+function card(t){const p=P(t.who);
+return `<div class="task" style="--p:${PRI[t.pri][1]}" data-edit="${t.id}"><b>${CAT[t.cat][1]} ${esc(t.t)}</b><div class="mut">${p.e} ${esc(p.n)}${t.due?` · <span class="${late(t)?"late":""}">${late(t)?"⚠ overdue ":"📅 "}${fd(t.due)}</span>`:""}</div>
+${t.st==="stuck"&&t.block?`<div class="mut">🥀 ${esc(t.block)}</div>`:""}
+<div class="tb">${t.st!=="done"?`${t.st==="todo"?`<button data-mv="${t.id}|doing">🌱 Start</button>`:""}${t.st==="doing"?`<button data-mv="${t.id}|stuck">🥀 Stuck</button>`:""}${t.st==="stuck"?`<button data-mv="${t.id}|doing">🌱 Resume</button>`:""}<button class="pri" data-mv="${t.id}|done">🌻 Done</button>`:`<button data-mv="${t.id}|todo">↩ Reopen</button>`}</div></div>`}
+function family(){
+return `<div class="card" style="margin-bottom:10px"><b>📱 This phone</b><div class="row" style="margin:6px 0">This phone belongs to <select data-me style="width:auto">${S.people.map(p=>`<option value="${p.id}" ${p.id===ME?"selected":""}>${p.e} ${esc(p.n)}</option>`).join("")}</select></div>${live?`<button data-sync>🔄 Sync now</button>`:`<p class="mut">Not connected to Google Sheets yet — data is saved on this device only.</p>`}</div><div class="card" style="margin-bottom:10px"><b>💾 Backup</b><p class="mut">Your tasks are saved only in this browser on this phone. Export a backup now and then, and restore it here if you ever clear browser data or switch phones.</p><div class="row"><button class="pri" data-export>Export backup</button><label class="mut" style="margin:0">Restore: <input type="file" accept=".json,application/json" data-imp></label></div></div><div class="card"><b>Family members</b><p class="mut">Rename people, pick an avatar, or add more.</p>`+
+S.people.map(p=>`<div class="row" style="margin:6px 0"><select data-pe="${p.id}" style="width:70px">${EMO.map(e=>`<option ${e===p.e?"selected":""}>${e}</option>`).join("")}</select><input class="sp" value="${esc(p.n)}" data-pn="${p.id}"><button data-delp="${p.id}">✕</button></div>`).join("")+
+`<button class="pri" data-addp>＋ Add person</button></div>`}
+function report(){
+const A=S.tasks,dn=A.filter(t=>t.st==="done"),tot=A.length,lt=A.filter(late);
+const wk=Date.now()-7*864e5,wc=dn.filter(t=>t.closed>wk).length;
+const rows=S.people.map(p=>{const m=A.filter(t=>t.who===p.id);if(!m.length)return"";const d=m.filter(t=>t.st==="done").length;
+return `<div style="margin:10px 0"><div class="row"><span>${p.e} <b>${esc(p.n)}</b></span><span class="sp"></span><span class="mut">${d}/${m.length} done${m.filter(late).length?` · <span class="late">${m.filter(late).length} overdue</span>`:""}</span></div><div class="bar"><i style="width:${d/m.length*100}%"></i></div></div>`}).join("");
+return `<div class="card" style="text-align:center"><div class="mut">Month started ${fd(S.start)} · tip: export a backup (Family tab) before starting a new month</div><div style="font-size:44px">${tot&&dn.length===tot?"🎉":"🌻"}</div><div class="stat">${tot?Math.round(dn.length/tot*100):0}% closed</div><div class="mut">${dn.length} of ${tot} tasks · ${wc} harvested in the last 7 days</div>
+<div class="row" style="justify-content:center;margin-top:8px"><button class="pri" data-newm>🌙 Start new month</button><button data-clr ${dn.length?"":"disabled"}>🧺 Clear harvested tasks</button></div></div>
+<div class="card" style="margin-top:10px"><b>By person</b>${rows||`<p class="mut">No tasks assigned yet.</p>`}</div>
+<div class="card" style="margin-top:10px"><b>⚠ Overdue (${lt.length})</b>${lt.map(t=>`<div class="mut" style="margin:4px 0">${P(t.who).e} ${esc(P(t.who).n)} — <b>${esc(t.t)}</b> · due ${fd(t.due)}</div>`).join("")||`<p class="mut">Nothing overdue — the farm is on schedule! 🐓</p>`}</div>
+<div class="card" style="margin-top:10px"><b>📚 Past months</b>${S.history.map(h=>`<div class="mut" style="margin:6px 0">🏅 <b>${esc(h.m)}</b> — ${h.done}/${h.tot} closed · ${h.pp.map(x=>esc(x.n)+" "+x.d+"/"+x.t).join(", ")}</div>`).join("")||`<p class="mut">Closed months will appear here.</p>`}</div>`}
+function modal(id){
+const t=id?S.tasks.find(x=>x.id==id):{t:"",who:ME||S.people[0]?.id,cat:"home",pri:"med",due:"",notes:"",st:"todo",log:[]};
+const opt=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${k===v?"selected":""}>${x[1]&&x[1].length<3?x[1]+" ":""}${x[0]}</option>`).join("");
+$("#mbox").innerHTML=`<h3 style="margin:0">${id?"Edit task":"Plant a new task"}</h3>
+<label>What needs doing?</label><input id="m_t" value="${esc(t.t)}">
+<div class="g2"><div><label>Assign to</label><select id="m_w">${S.people.map(p=>`<option value="${p.id}" ${p.id===t.who?"selected":""}>${p.e} ${esc(p.n)}</option>`).join("")}</select></div><div><label>Due date</label><input type="date" id="m_d" value="${t.due||""}"></div>
+<div><label>Priority</label><select id="m_p">${opt(PRI,t.pri).replace(/(<option[^>]*>)/g,"$1")}</select></div><div><label>Farm zone</label><select id="m_c">${opt(CAT,t.cat)}</select></div></div>
+${id?`<label>Status</label><select id="m_s">${opt(ST,t.st).replace(/>([^<]*)</g,">$1<")}</select><label>Blocker (if stuck)</label><input id="m_b" value="${esc(t.block)}">`:""}
+<label>Notes</label><textarea id="m_n" rows="2">${esc(t.notes)}</textarea>
+${id?`<label>Add an update</label><input id="m_u" placeholder="e.g. Called the vet, waiting for a callback"><div style="margin-top:8px">${(t.log||[]).slice().reverse().map(l=>`<div class="log">${l[0]} — ${esc(l[1])}${l[2]?" · "+esc(l[2]):""}</div>`).join("")}</div>`:""}
+<div class="row" style="margin-top:14px">${id?`<button data-del="${id}">🗑</button>`:""}<span class="sp"></span><button data-cancel>Cancel</button><button class="pri" data-save="${id||""}">Save</button></div>`;
+$("#modal").style.display="flex"}
+function setSt(t,st,why){if(t.st===st)return;t.st=st;(t.log=t.log||[]).push([now(),why||("Moved to "+ST[st][0]),byMe()]);
+if(st==="done"){mine=t.id;t.closed=Date.now();burst([ "🌻","⭐","✨","🌾"]);toast(WIN[Math.floor(Math.random()*WIN.length)])}else t.closed=0}
+function toast(m){const e=$("#toast");e.textContent=m;e.style.display="block";setTimeout(()=>e.style.display="none",2200)}
+function burst(em,n=28){for(let i=0;i<n;i++){const f=document.createElement("div");f.className="fx";f.textContent=em[i%em.length];f.style.left=Math.random()*100+"vw";f.style.animationDelay=Math.random()*.8+"s";document.body.appendChild(f);setTimeout(()=>f.remove(),3200)}}
+document.addEventListener("click",e=>{const b=e.target.closest("button"),k=e.target.closest("[data-edit]");
+const d=b?b.dataset:null;
+if(!d){if(k){modal(k.dataset.edit)}else if(e.target.id==="modal")$("#modal").style.display="none";return}
+if("tab" in d)S.tab=d.tab;
+else if("f" in d)S.f=d.f;
+else if("new" in d){modal();return}
+else if("export" in d){const u=URL.createObjectURL(new Blob([JSON.stringify({people:S.people,tasks:S.tasks,history:S.history,start:S.start},null,1)],{type:"application/json"})),l=document.createElement("a");l.href=u;l.download="farm-tasks-backup-"+td()+".json";document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);return}
+else if("code" in d){const c=$("#codein").value.trim();if(c.length<4){toast("Enter the family code");return}CODE=c;try{localStorage.setItem("tandemcode",c)}catch(e){}init();return}
+else if("iam" in d){setMe(d.iam)}
+else if("newme" in d){const n=$("#nm").value.trim();if(!n)return;const q2={id:"p"+uid(),o:Date.now(),n,e:"🧑‍🌾"};S.people.push(q2);put("people",q2);setMe(q2.id)}
+else if("sync" in d){live?pull(true):0;return}
+else if("cancel" in d){$("#modal").style.display="none";return}
+else if("mv" in d){const[i,st]=d.mv.split("|");const tk=S.tasks.find(x=>x.id==i);setSt(tk,st);put("tasks",tk);if(st==="stuck")setTimeout(()=>modal(i),50)}
+else if("save" in d){const g=x=>$("#"+x)?.value,tt=(g("m_t")||"").trim();if(!tt){$("#m_t").focus();return}
+let t=d.save?S.tasks.find(x=>x.id==d.save):null;if(!t){t={id:uid(),by:ME,st:"todo",log:[[now(),"Planted",byMe()]]};S.tasks.push(t)}
+Object.assign(t,{t:tt,who:g("m_w"),due:g("m_d"),pri:g("m_p"),cat:g("m_c"),notes:g("m_n")});
+if(g("m_b")!=null)t.block=g("m_b");if(g("m_u")&&g("m_u").trim())t.log.push([now(),g("m_u").trim()]);
+if(g("m_s"))setSt(t,g("m_s"));put("tasks",t);$("#modal").style.display="none"}
+else if("del" in d){if(confirm("Delete this task?")){S.tasks=S.tasks.filter(x=>x.id!=d.del);rm("tasks",d.del);$("#modal").style.display="none"}else return}
+else if("sample" in d){const w=S.people.map(p=>p.id),dt=n=>{const x=new Date();x.setDate(x.getDate()+n);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
+[["Book vet check-up for the dog","health",0,2,"high"],["Pay electricity bill","money",1,-1,"high"],["Finish science project","kids",2,3,"med"]].forEach(s=>pushT({id:uid(),t:s[0],cat:s[1],who:w[s[2]%w.length],due:dt(s[3]),pri:s[4],st:"todo",log:[[now(),"Planted"]],notes:""}))}
+else if("newm" in d){if(!confirm("Start a new month? Finished tasks are archived into history and removed. Unfinished tasks carry over."))return;
+const A=S.tasks,dn=A.filter(t=>t.st==="done");
+S.history.unshift({m:new Date(S.start+"T00:00").toLocaleString("en",{month:"long",year:"numeric"}),tot:A.length,done:dn.length,pp:S.people.map(p=>({n:p.n,d:dn.filter(t=>t.who===p.id).length,t:A.filter(t=>t.who===p.id).length})).filter(x=>x.t)});
+dn.forEach(t=>rm("tasks",t.id));S.tasks=A.filter(t=>t.st!=="done");S.start=td();put("meta",{id:"m",history:S.history,start:S.start});S.tab="report";burst(["🌻","🌾","🍎","🍯"],40);toast("Fresh month, fresh field! 🌱")}
+else if("clr" in d){if(confirm("Remove all harvested tasks from the board?"))S.tasks=S.tasks.filter(t=>{if(t.st==="done"){rm("tasks",t.id);return false}return true});else return}
+else if("addp" in d){{const q={id:"p"+uid(),o:Date.now(),n:"New person",e:"🧑‍🌾"};S.people.push(q);put("people",q)}}
+else if("delp" in d){if(confirm("Remove this person? Their tasks become unassigned.")){S.people=S.people.filter(p=>p.id!==d.delp);rm("people",d.delp);S.f="all"}else return}
+else return;render()});
+document.addEventListener("change",e=>{const d=e.target.dataset;
+if("imp" in d){const f=e.target.files[0];if(!f)return;f.text().then(x=>{try{const j=JSON.parse(x);if(!Array.isArray(j.tasks)||!Array.isArray(j.people))throw 0;if(!confirm("Replace everything on this device with the backup?"))return;S.tasks=j.tasks;S.people=j.people;S.history=j.history||[];S.start=j.start||td();if(live){S.people.forEach(p=>put("people",p));S.tasks.forEach(t=>put("tasks",t));put("meta",{id:"m",history:S.history,start:S.start})}S.f="all";save();render();toast("Backup restored")}catch(err){toast("⚠ That file isn’t a valid backup")}})}
+if(d.pn){const q=P(d.pn);q.n=e.target.value;put("people",q);save()}if(d.pe){const q=P(d.pe);q.e=e.target.value;put("people",q);save()}if("me" in d){ME=e.target.value;try{localStorage.setItem("farmme",ME)}catch(x){}render()}});
+$("#app").innerHTML="<p class=mut style='text-align:center'>Loading the farm…</p>";init();
+</script></body></html>
